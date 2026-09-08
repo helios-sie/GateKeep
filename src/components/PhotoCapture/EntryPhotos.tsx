@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getPhoto } from '../../lib/db';
+import './EntryPhotos.css';
 
 interface EntryPhotosProps {
   photoIds: string[];

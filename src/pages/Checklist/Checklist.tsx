@@ -1,9 +1,27 @@
-// Checklist view — the default page. Its components and data will be added
-// in a later step; for now this is just the routed shell.
+import { useState } from 'react';
+import { Calendar } from '../../components/Calendar/Calendar';
+import { useTasks } from '../../hooks/useTasks';
+import { todayISO } from '../../lib/dateUtils';
+import { Editor } from './components/Editor/Editor';
+import { FilterBar } from './components/FilterBar/FilterBar';
+import { TaskList } from './components/TaskList/TaskList';
+
+// Checklist page — day-scoped tasks backed by the "tasks" store.
 export function Checklist() {
+  const [date, setDate] = useState(todayISO());
+  const { tasks, filter, setFilter, loading, addTask, updateStatus, removeTask } = useTasks(date);
+
   return (
     <section className="page">
-      <h2 className="page-heading">Checklist page</h2>
+      <Calendar date={date} onChange={setDate} />
+      <Editor onSubmit={addTask} />
+      <FilterBar value={filter} onChange={setFilter} />
+      <TaskList
+        tasks={tasks}
+        loading={loading}
+        onToggleStatus={updateStatus}
+        onDelete={removeTask}
+      />
     </section>
   );
 }

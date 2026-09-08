@@ -1,4 +1,4 @@
-import type { StatusFilter } from '../../types/entry';
+import type { StatusFilter } from '../../../../types/task';
 import './FilterBar.css';
 
 interface FilterBarProps {

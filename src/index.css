@@ -94,11 +94,14 @@ textarea:focus-visible {
 }
 
 .page {
-  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
 }
 
+/* Placeholder heading for pages that have no content yet */
 .page-heading {
   margin: 0;
+  padding: var(--sp-5) var(--sp-4);
   font-family: var(--font-serif);
   font-size: 1.15rem;
   font-weight: 600;

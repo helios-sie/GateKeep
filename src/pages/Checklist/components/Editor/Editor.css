@@ -67,9 +67,3 @@
   border-color: var(--danger);
   color: var(--accent-contrast);
 }
-
-.editor-photo-count {
-  margin-top: var(--sp-2);
-  font-size: 0.8rem;
-  color: var(--text-dim);
-}

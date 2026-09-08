@@ -1,0 +1,85 @@
+.diary-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.diary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.diary-text {
+  flex: 1;
+  margin: 0;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.diary-delete {
+  flex: none;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.diary-delete:hover {
+  color: var(--danger);
+}
+
+.diary-list-status {
+  margin: 0;
+  padding: var(--sp-5) var(--sp-4);
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 0.9rem;
+}
+
+.diary-list-empty {
+  margin: var(--sp-5) var(--sp-4);
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.diary-list-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  color: var(--gold);
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  margin-bottom: var(--sp-3);
+}
+
+.diary-list-empty-title {
+  margin: 0 0 var(--sp-1);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.diary-list-empty-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}

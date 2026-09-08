@@ -1,12 +1,27 @@
 // This is the single boundary between the app and on-device storage.
-// Nothing outside this file should call indexedDB directly — components
-// and hooks only ever talk to the functions exported here.
+// Nothing outside this file should call indexedDB directly — components and
+// hooks only ever talk to the functions exported here.
+//
+// Three unrelated concepts, three unrelated object stores. The task functions
+// and the diary functions are deliberately independent — they share no domain
+// logic and no domain function, so the two features can evolve separately:
+//
+//   tasks        -> Checklist page   saveTask / getTasksByDate / deleteTask
+//   diaryEntries -> Diary page       saveDiaryEntry / getDiaryEntriesByDate / deleteDiaryEntry
+//   photos       -> attachments      savePhoto / getPhoto / deletePhoto  (not yet wired to a page)
+//
+// `openDB` and `tx` below are storage plumbing only (connection + transaction
+// wrappers); they carry no knowledge of tasks or diary entries.
 
-import type { DiaryEntry, PhotoAttachment } from '../types/entry';
+import type { DiaryEntry } from '../types/diaryEntry';
+import type { PhotoAttachment } from '../types/photo';
+import type { Task } from '../types/task';
 
-const DB_NAME = 'diary-db';
+const DB_NAME = 'gatekeep-db';
 const DB_VERSION = 1;
-const ENTRIES_STORE = 'entries';
+
+const TASKS_STORE = 'tasks';
+const DIARY_STORE = 'diaryEntries';
 const PHOTOS_STORE = 'photos';
 
 function openDB(): Promise<IDBDatabase> {
@@ -15,10 +30,17 @@ function openDB(): Promise<IDBDatabase> {
 
     request.onupgradeneeded = () => {
       const db = request.result;
-      if (!db.objectStoreNames.contains(ENTRIES_STORE)) {
-        const store = db.createObjectStore(ENTRIES_STORE, { keyPath: 'id' });
+
+      if (!db.objectStoreNames.contains(TASKS_STORE)) {
+        const store = db.createObjectStore(TASKS_STORE, { keyPath: 'id' });
         store.createIndex('by_date', 'date', { unique: false });
       }
+
+      if (!db.objectStoreNames.contains(DIARY_STORE)) {
+        const store = db.createObjectStore(DIARY_STORE, { keyPath: 'id' });
+        store.createIndex('by_date', 'date', { unique: false });
+      }
+
       if (!db.objectStoreNames.contains(PHOTOS_STORE)) {
         db.createObjectStore(PHOTOS_STORE, { keyPath: 'id' });
       }
@@ -43,31 +65,51 @@ function tx<T>(
   });
 }
 
-export async function saveEntry(entry: DiaryEntry): Promise<void> {
+// --- Tasks (Checklist page) -------------------------------------------------
+
+export async function saveTask(task: Task): Promise<void> {
   const db = await openDB();
-  await tx(db, ENTRIES_STORE, 'readwrite', (s) => s.put(entry));
+  await tx(db, TASKS_STORE, 'readwrite', (s) => s.put(task));
 }
 
-export async function deleteEntry(id: string): Promise<void> {
+export async function deleteTask(id: string): Promise<void> {
   const db = await openDB();
-  await tx(db, ENTRIES_STORE, 'readwrite', (s) => s.delete(id));
+  await tx(db, TASKS_STORE, 'readwrite', (s) => s.delete(id));
 }
 
-export async function getEntriesByDate(date: string): Promise<DiaryEntry[]> {
+export async function getTasksByDate(date: string): Promise<Task[]> {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const t = db.transaction(ENTRIES_STORE, 'readonly');
-    const index = t.objectStore(ENTRIES_STORE).index('by_date');
-    const req = index.getAll(date);
-    req.onsuccess = () => resolve(req.result);
+    const t = db.transaction(TASKS_STORE, 'readonly');
+    const req = t.objectStore(TASKS_STORE).index('by_date').getAll(date);
+    req.onsuccess = () => resolve(req.result as Task[]);
     req.onerror = () => reject(req.error);
   });
 }
 
-export async function getAllEntries(): Promise<DiaryEntry[]> {
+// --- Diary entries (Diary page) -------------------------------------------------
+
+export async function saveDiaryEntry(entry: DiaryEntry): Promise<void> {
   const db = await openDB();
-  return tx(db, ENTRIES_STORE, 'readonly', (s) => s.getAll());
+  await tx(db, DIARY_STORE, 'readwrite', (s) => s.put(entry));
 }
+
+export async function deleteDiaryEntry(id: string): Promise<void> {
+  const db = await openDB();
+  await tx(db, DIARY_STORE, 'readwrite', (s) => s.delete(id));
+}
+
+export async function getDiaryEntriesByDate(date: string): Promise<DiaryEntry[]> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const t = db.transaction(DIARY_STORE, 'readonly');
+    const req = t.objectStore(DIARY_STORE).index('by_date').getAll(date);
+    req.onsuccess = () => resolve(req.result as DiaryEntry[]);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// --- Photos (attachments; not yet wired into either page) ------------------
 
 export async function savePhoto(photo: PhotoAttachment): Promise<void> {
   const db = await openDB();

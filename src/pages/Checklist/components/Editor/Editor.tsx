@@ -1,25 +1,23 @@
 import { useState } from 'react';
-import { useVoiceInput } from '../../hooks/useVoiceInput';
-import { PhotoCapture } from '../PhotoCapture/PhotoCapture';
+import { useVoiceInput } from '../../../../hooks/useVoiceInput';
 import './Editor.css';
 
 interface EditorProps {
-  onSubmit: (text: string, photoIds: string[]) => void;
+  onSubmit: (text: string) => void;
 }
 
 export function Editor({ onSubmit }: EditorProps) {
   const [text, setText] = useState('');
-  const [photoIds, setPhotoIds] = useState<string[]>([]);
 
   const voice = useVoiceInput((transcript) =>
     setText((prev) => (prev ? `${prev} ${transcript}` : transcript))
   );
 
   function handleSubmit() {
-    if (!text.trim() && photoIds.length === 0) return;
-    onSubmit(text.trim(), photoIds);
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    onSubmit(trimmed);
     setText('');
-    setPhotoIds([]);
   }
 
   return (
@@ -27,13 +25,11 @@ export function Editor({ onSubmit }: EditorProps) {
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Write about your day…"
-        rows={3}
+        placeholder="Add a task…"
+        rows={2}
       />
 
       <div className="editor-toolbar">
-        <PhotoCapture onCapture={(id) => setPhotoIds((prev) => [...prev, id])} />
-
         {voice.isSupported && (
           <button
             type="button"
@@ -45,13 +41,9 @@ export function Editor({ onSubmit }: EditorProps) {
         )}
 
         <button type="button" className="primary" onClick={handleSubmit}>
-          Add entry
+          Add task
         </button>
       </div>
-
-      {photoIds.length > 0 && (
-        <div className="editor-photo-count">{photoIds.length} photo(s) attached</div>
-      )}
     </div>
   );
 }

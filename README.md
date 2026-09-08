@@ -1,20 +1,34 @@
 # Gatekeep
 
-A private, on-device journal PWA — text notes, voice-to-text, and photos, organized by date, with task-style status tracking. All data lives in the browser's IndexedDB, on your device — nothing is sent to any server.
+A private, on-device PWA with three independent pages — Reminders, Checklist,
+and Diary — switched from a bottom tab bar. All data lives in the browser's
+IndexedDB, on your device; nothing is sent to any server.
 
 ## Structure
 
 ```
 src/
-  components/   One folder per UI piece (Calendar, Editor, PhotoCapture, TaskList, FilterBar).
-                 Each component only renders — no direct storage access.
-  hooks/         useEntries: bridges db.ts to React state.
-                 useVoiceInput: wraps the browser's SpeechRecognition API.
+  components/        Shared UI, used by more than one page.
+    BottomNav/        The three-tab bar.
+    Calendar/         Day navigator (Checklist + Diary).
+    PhotoCapture/     Camera capture + photo strip. Not wired to a page yet.
+  pages/            One folder per routed view; each owns its own components.
+    Checklist/        Tasks (id, date, text, status, createdAt) -> "tasks" store.
+      components/      Editor, FilterBar, TaskList.
+    Diary/            Notes (id, date, text, createdAt) -> "diaryEntries" store.
+      components/      DiaryComposer, DiaryList.
+    Reminders/        Placeholder.
+  hooks/
+    useHashRoute      #/checklist | #/diary | #/reminders (default checklist).
+    useTasks          Bridges the "tasks" store to React state.
+    useDiaryEntries   Bridges the "diaryEntries" store to React state.
+    useVoiceInput     Wraps the browser's SpeechRecognition API.
   lib/
-    db.ts        The only file that touches IndexedDB. Everything else goes through it.
-    dateUtils.ts Small date-formatting helpers.
-  types/         Shared TypeScript types.
-  App.tsx        Wires hooks + components together. No business logic itself.
+    db.ts            The only file that touches IndexedDB. Three separate stores
+                     (tasks, diaryEntries, photos) with non-overlapping functions.
+    dateUtils.ts     Small date-formatting helpers.
+  types/             task.ts, diaryEntry.ts, photo.ts.
+  App.tsx            Header + routed page + BottomNav. No business logic.
 ```
 
 ## Setup
