@@ -6,9 +6,12 @@ interface DiaryEntryEditorProps {
   /** The saved entry text for this date, or null if no entry exists yet. */
   value: string | null;
   onSave: (text: string) => void;
+  /** When provided, a Cancel action returns to view mode without saving.
+   *  Omitted for the initial empty state (there is nothing to go back to). */
+  onCancel?: () => void;
 }
 
-export function DiaryEntryEditor({ value, onSave }: DiaryEntryEditorProps) {
+export function DiaryEntryEditor({ value, onSave, onCancel }: DiaryEntryEditorProps) {
   const hasEntry = value !== null;
   const [text, setText] = useState(value ?? '');
 
@@ -25,9 +28,16 @@ export function DiaryEntryEditor({ value, onSave }: DiaryEntryEditorProps) {
         placeholder="Write about your day…"
       />
 
-      <button type="button" className="primary" onClick={() => onSave(text)}>
-        {hasEntry ? 'Update entry' : 'Save entry'}
-      </button>
+      <div className="diary-entry-actions">
+        {onCancel && (
+          <button type="button" className="secondary" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
+        <button type="button" className="primary" onClick={() => onSave(text)}>
+          {hasEntry ? 'Update entry' : 'Save entry'}
+        </button>
+      </div>
     </div>
   );
 }

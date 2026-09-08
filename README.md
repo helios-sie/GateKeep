@@ -16,7 +16,7 @@ src/
     Checklist/        Tasks (id, date, text, status, createdAt) -> "tasks" store.
       components/      Editor, FilterBar, TaskList.
     Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
-      components/      DiaryEntryEditor (edited in place; no list).
+      components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor.
     Reminders/        Placeholder.
   hooks/
     useHashRoute      #/checklist | #/diary | #/reminders (default checklist).

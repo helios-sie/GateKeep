@@ -48,8 +48,13 @@
   outline: none;
 }
 
+.diary-entry-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+}
+
 .diary-entry-editor .primary {
-  align-self: flex-end;
   border: 1px solid var(--accent);
   background: var(--accent);
   color: var(--accent-contrast);
@@ -62,4 +67,18 @@
 .diary-entry-editor .primary:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
+}
+
+.diary-entry-editor .secondary {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-dim);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.diary-entry-editor .secondary:hover {
+  color: var(--text);
+  border-color: var(--accent);
 }

@@ -1,0 +1,37 @@
+.diary-entry-view {
+  position: relative;
+  padding: var(--sp-4);
+  padding-right: calc(var(--sp-4) + 36px);
+}
+
+.diary-entry-edit-btn {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.diary-entry-edit-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Plain flowing text — no fixed height, no internal scrollbox. */
+.diary-entry-body {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.65;
+  font-size: 1rem;
+  color: var(--text);
+}
