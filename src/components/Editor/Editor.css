@@ -1,0 +1,75 @@
+.editor {
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.editor textarea {
+  width: 100%;
+  resize: vertical;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: inherit;
+  padding: var(--sp-3);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color var(--ease);
+}
+
+.editor textarea::placeholder {
+  color: var(--text-faint);
+}
+
+.editor textarea:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.editor-toolbar button {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-dim);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.editor-toolbar button:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.editor-toolbar button.primary {
+  margin-left: auto;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 550;
+}
+
+.editor-toolbar button.primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: var(--accent-contrast);
+}
+
+.editor-toolbar button.mic-active {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--accent-contrast);
+}
+
+.editor-photo-count {
+  margin-top: var(--sp-2);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
