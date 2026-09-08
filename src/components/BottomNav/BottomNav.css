@@ -1,0 +1,32 @@
+.bottom-nav {
+  display: flex;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--sp-2) var(--sp-1) calc(var(--sp-2) - 1px);
+  background: none;
+  border: none;
+  border-top: 2px solid transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.01em;
+}
+
+.bottom-nav-item:hover {
+  color: var(--text-dim);
+}
+
+.bottom-nav-item.active {
+  color: var(--accent);
+  border-top-color: var(--accent);
+}

@@ -1,15 +1,11 @@
-import { useState } from 'react';
-import { Calendar } from './components/Calendar/Calendar';
-import { Editor } from './components/Editor/Editor';
-import { FilterBar } from './components/FilterBar/FilterBar';
-import { TaskList } from './components/TaskList/TaskList';
-import { useEntries } from './hooks/useEntries';
-import { todayISO } from './lib/dateUtils';
+import { BottomNav } from './components/BottomNav/BottomNav';
+import { useHashRoute } from './hooks/useHashRoute';
+import { Checklist } from './pages/Checklist/Checklist';
+import { Diary } from './pages/Diary/Diary';
+import { Reminders } from './pages/Reminders/Reminders';
 
 export function App() {
-  const [date, setDate] = useState(todayISO());
-  const { entries, filter, setFilter, loading, addEntry, updateStatus, removeEntry } =
-    useEntries(date);
+  const { route, navigate } = useHashRoute();
 
   return (
     <div className="app">
@@ -17,15 +13,13 @@ export function App() {
         <h1>Gatekeep</h1>
       </header>
 
-      <Calendar date={date} onChange={setDate} />
-      <Editor onSubmit={addEntry} />
-      <FilterBar value={filter} onChange={setFilter} />
-      <TaskList
-        entries={entries}
-        loading={loading}
-        onToggleStatus={updateStatus}
-        onDelete={removeEntry}
-      />
+      <main className="app-main">
+        {route === 'checklist' && <Checklist />}
+        {route === 'diary' && <Diary />}
+        {route === 'reminders' && <Reminders />}
+      </main>
+
+      <BottomNav active={route} onNavigate={navigate} />
     </div>
   );
 }

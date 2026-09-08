@@ -61,24 +61,48 @@ textarea:focus-visible {
 .app {
   max-width: 480px;
   margin: 0 auto;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bg);
 }
 
 .app-header {
-  padding: var(--sp-5) var(--sp-4) var(--sp-3);
+  flex: none;
+  display: flex;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-4);
+  padding-top: max(var(--sp-3), env(safe-area-inset-top));
   border-bottom: 1px solid var(--border);
 }
 
 .app-header h1 {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 1.55rem;
+  font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--accent);
+}
+
+.app-main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page {
+  padding: var(--sp-4);
+}
+
+.page-heading {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 @media (prefers-reduced-motion: reduce) {
