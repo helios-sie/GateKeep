@@ -15,18 +15,19 @@ src/
   pages/            One folder per routed view; each owns its own components.
     Checklist/        Tasks (id, date, text, status, createdAt) -> "tasks" store.
       components/      Editor, FilterBar, TaskList.
-    Diary/            Notes (id, date, text, createdAt) -> "diaryEntries" store.
-      components/      DiaryComposer, DiaryList.
+    Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
+      components/      DiaryEntryEditor (edited in place; no list).
     Reminders/        Placeholder.
   hooks/
     useHashRoute      #/checklist | #/diary | #/reminders (default checklist).
     useTasks          Bridges the "tasks" store to React state.
-    useDiaryEntries   Bridges the "diaryEntries" store to React state.
+    useDiaryEntry     Loads/saves the single diary entry for a date.
     useVoiceInput     Wraps the browser's SpeechRecognition API.
   lib/
     db.ts            The only file that touches IndexedDB. Three separate stores
                      (tasks, diaryEntries, photos) with non-overlapping functions.
     dateUtils.ts     Small date-formatting helpers.
+    userProfile.ts   Placeholder user name; swap here when a profile UI exists.
   types/             task.ts, diaryEntry.ts, photo.ts.
   App.tsx            Header + routed page + BottomNav. No business logic.
 ```

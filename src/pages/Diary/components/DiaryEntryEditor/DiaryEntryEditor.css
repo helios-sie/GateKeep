@@ -1,0 +1,65 @@
+.diary-entry-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+}
+
+.diary-prompt {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--accent);
+  letter-spacing: 0.01em;
+}
+
+/*
+ * One journal entry. It must never truncate or clip long text: the field has
+ * a bounded height and scrolls internally past that, so the full entry is
+ * always readable regardless of length. No character limit anywhere.
+ *
+ * Diary entries have no status, so there is deliberately no "done" /
+ * strikethrough styling here — that is Checklist-only behaviour.
+ */
+.diary-entry-text {
+  width: 100%;
+  min-height: 240px;
+  max-height: 55vh;
+  overflow-y: auto;
+  resize: vertical;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--sp-3);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-decoration: none;
+  transition: border-color var(--ease);
+}
+
+.diary-entry-text::placeholder {
+  color: var(--text-faint);
+}
+
+.diary-entry-text:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.diary-entry-editor .primary {
+  align-self: flex-end;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 550;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.diary-entry-editor .primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
