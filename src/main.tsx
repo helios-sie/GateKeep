@@ -11,7 +11,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/diary-app/service-worker.js').catch(() => {
+    navigator.serviceWorker.register('/GateKeep/service-worker.js').catch(() => {
       // Offline support is a nice-to-have; failing silently here is fine,
       // the app still works fully online without it.
     });

@@ -28,9 +28,13 @@ Open the printed local URL. On your phone, use your machine's LAN IP (e.g. `http
 
 ## Before deploying
 
-1. In `vite.config.ts`, set `base` to match your actual GitHub repo name.
-2. In `public/manifest.json`, update `start_url` and `scope` the same way.
-3. Add real icons at `public/icons/icon-192.png` and `public/icons/icon-512.png` (192×192 and 512×512 PNGs).
+Paths are configured for the repo `helios-sie/GateKeep` (served from `/GateKeep/`).
+If the repo name changes, update `base` in `vite.config.ts`, `start_url`/`scope` in
+`public/manifest.json`, the `APP_SHELL` paths in `public/service-worker.js`, and the
+service-worker registration path in `src/main.tsx` to match.
+
+Also add real icons at `public/icons/icon-192.png` and `public/icons/icon-512.png`
+(192×192 and 512×512 PNGs).
 
 ## Deploy to GitHub Pages
 
@@ -39,7 +43,7 @@ npm install -D gh-pages   # already in package.json devDependencies
 npm run deploy
 ```
 
-This builds the app and pushes `dist/` to a `gh-pages` branch. Enable GitHub Pages for that branch in your repo settings, then visit `https://<username>.github.io/<repo-name>/`.
+This builds the app and pushes `dist/` to a `gh-pages` branch. Enable GitHub Pages for that branch in the repo settings, then visit `https://helios-sie.github.io/GateKeep/`.
 
 On your phone, open that URL in the browser and use "Add to Home Screen" to install it like a native app.
 

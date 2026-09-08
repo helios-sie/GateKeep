@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// IMPORTANT: change 'diary-app' below to your actual GitHub repo name.
 // GitHub Pages serves project sites from /<repo-name>/, so Vite needs
-// to know that prefix at build time or asset paths will break.
+// that prefix at build time or asset paths break. Repo: helios-sie/GateKeep.
 export default defineConfig({
   plugins: [react()],
-  base: '/diary-app/',
+  base: '/GateKeep/',
 });
