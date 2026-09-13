@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CameraIcon, MicIcon } from '../icons';
 import { AudioPlayer } from '../MediaViewer/AudioPlayer';
 import { ImageLightbox } from '../MediaViewer/ImageLightbox';
 import type { ContentSegment } from '../../types/content';
@@ -70,7 +71,7 @@ function InlinePhoto({ id, getPhoto, onOpen }: { id: string; getPhoto: MediaFetc
       }}
       aria-label="View attached photo"
     >
-      {url ? <img src={url} alt="" /> : '📷'}
+      {url ? <img src={url} alt="" /> : <CameraIcon />}
     </button>
   );
 }
@@ -103,7 +104,7 @@ function InlineAudio({ id, getAudio, onOpen }: { id: string; getAudio: MediaFetc
       }}
       aria-label="Play attached audio note"
     >
-      🎤
+      <MicIcon />
     </button>
   );
 }

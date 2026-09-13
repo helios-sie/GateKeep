@@ -5,6 +5,7 @@ import { PhotoCapture } from '../PhotoCapture/PhotoCapture';
 import type { PhotoCaptureHandle } from '../PhotoCapture/PhotoCapture';
 import { AudioPlayer } from '../MediaViewer/AudioPlayer';
 import { ImageLightbox } from '../MediaViewer/ImageLightbox';
+import { CAMERA_ICON_SVG, CameraIcon, MicIcon, MIC_ICON_SVG } from '../icons';
 import { generateId } from '../../lib/id';
 import type { ContentSegment } from '../../types/content';
 import { extractSegments } from './extractSegments';
@@ -114,7 +115,9 @@ export const InlineComposer = forwardRef<InlineComposerHandle, InlineComposerPro
       img.alt = '';
       iconBtn.appendChild(img);
     } else {
-      iconBtn.textContent = kind === 'photo' ? '📷' : '🎤';
+      // A vanilla-DOM node (outside React), so an innerHTML SVG string
+      // rather than JSX — same currentColor-based icons as everywhere else.
+      iconBtn.innerHTML = kind === 'photo' ? CAMERA_ICON_SVG : MIC_ICON_SVG;
     }
     iconBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -269,7 +272,7 @@ export const InlineComposer = forwardRef<InlineComposerHandle, InlineComposerPro
           }}
           aria-label="Attach photo"
         >
-          📷
+          <CameraIcon />
         </button>
 
         <button
@@ -281,7 +284,7 @@ export const InlineComposer = forwardRef<InlineComposerHandle, InlineComposerPro
           }}
           aria-label={recording ? 'Stop recording' : 'Record audio note'}
         >
-          🎤
+          <MicIcon />
         </button>
       </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { SearchResultsList } from '../../../../components/SearchResultsList';
+import { CloseIcon, SearchIcon } from '../../../../components/icons';
 import { navigateTo } from '../../../../hooks/useHashRoute';
 import { SEARCH_SCOPE_LABELS, SEARCH_SCOPES } from '../../../../hooks/useDatedSearch';
 import type { SearchScope } from '../../../../hooks/useDatedSearch';
@@ -50,7 +51,7 @@ export function DiarySearch({ onActiveChange }: DiarySearchProps) {
         aria-expanded={expanded}
         aria-label={expanded ? 'Close search' : 'Search entries'}
       >
-        {expanded ? '✕' : '🔍'}
+        {expanded ? <CloseIcon /> : <SearchIcon />}
       </button>
 
       {expanded && (
