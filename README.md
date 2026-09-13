@@ -33,13 +33,17 @@ src/
                      without needing to know about segments. Tasks saved
                      before this existed have no `content` — treated as one
                      text segment (src/lib/taskContent.ts).
-      components/      Editor: a plain textarea with a camera + mic icon
-                       docked in its bottom-right corner (WhatsApp-style).
-                       Tapping one saves via saveTaskPhoto/saveTaskAudio and
-                       inserts a ⟦photo:id⟧/⟦audio:id⟧ marker at the cursor
-                       (Editor/taskMarkers.ts parses these into segments on
-                       submit — the one place "rich content in a plain
-                       textarea" is represented as text).
+      components/      Editor: a contentEditable box (not a <textarea> — a
+                       textarea can't hold real inline content) with a
+                       camera + mic icon docked in its bottom-right corner
+                       (WhatsApp-style). Tapping one saves via
+                       saveTaskPhoto/saveTaskAudio and inserts a real inline
+                       icon at the cursor, live — each with its own small ✕
+                       badge (its own element, not overlapping the icon's
+                       tap target) to discard + delete that attachment's
+                       blob before the task is ever saved. Submitting walks
+                       the DOM (Editor/extractSegments.ts) into an ordered
+                       TaskSegment[].
                        TaskSearch (search bar + month/year/all-time scope +
                        results, over the derived `text`).
                        TaskList/TaskRow (swipe left or right to delete — the

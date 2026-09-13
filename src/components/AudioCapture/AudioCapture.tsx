@@ -7,6 +7,12 @@ interface AudioCaptureProps {
   /** Mirrors recording start/stop so the caller can reflect it in its own
    *  trigger icon (e.g. a pulsing mic). */
   onRecordingChange?: (recording: boolean) => void;
+  /** Fired instead of silently doing nothing when recording can't start —
+   *  e.g. no getUserMedia (insecure context: getUserMedia only exists on
+   *  HTTPS or localhost — a plain http://<lan-ip> page, like testing over
+   *  the dev server's --host address on a phone, does not qualify),
+   *  permission denied, or no microphone. */
+  onError?: (message: string) => void;
 }
 
 export interface AudioCaptureHandle {
@@ -14,13 +20,16 @@ export interface AudioCaptureHandle {
   toggle: () => void;
 }
 
-/** Whether this browser can record audio at all — check before rendering a
- *  trigger for it (there's no picker fallback anymore; unsupported means no
- *  attach-audio affordance shows). */
-export const canRecordAudio =
-  typeof MediaRecorder !== 'undefined' &&
-  typeof navigator !== 'undefined' &&
-  !!navigator.mediaDevices?.getUserMedia;
+function describeStartFailure(err: unknown): string {
+  const name = err instanceof DOMException ? err.name : undefined;
+  if (name === 'NotAllowedError' || name === 'SecurityError') {
+    return 'Microphone permission was denied.';
+  }
+  if (name === 'NotFoundError') {
+    return 'No microphone was found on this device.';
+  }
+  return 'Could not start recording.';
+}
 
 function pickMimeType(): string {
   if (typeof MediaRecorder.isTypeSupported === 'function') {
@@ -31,39 +40,50 @@ function pickMimeType(): string {
 }
 
 // Headless: no UI of its own. Records via MediaRecorder; the caller supplies
-// its own mic icon and calls ref.current.toggle() to start/stop.
+// its own mic icon (always shown — see Editor.tsx) and calls
+// ref.current.toggle() to start/stop.
 export const AudioCapture = forwardRef<AudioCaptureHandle, AudioCaptureProps>(function AudioCapture(
-  { onCapture, onRecordingChange },
+  { onCapture, onRecordingChange, onError },
   ref
 ) {
   const recorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
 
   async function startRecording() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = pickMimeType();
-      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
-
-      chunksRef.current = [];
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || mimeType });
-        stream.getTracks().forEach((track) => track.stop());
-        onRecordingChange?.(false);
-        if (blob.size > 0) onCapture(blob);
-      };
-
-      recorder.start();
-      recorderRef.current = recorder;
-      onRecordingChange?.(true);
-    } catch {
-      // Mic permission denied/unavailable — fail quietly rather than
-      // showing an error; the icon just goes back to idle.
-      onRecordingChange?.(false);
+    if (typeof MediaRecorder === 'undefined') {
+      onError?.("Voice notes aren't supported in this browser.");
+      return;
     }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      onError?.('Voice notes need a secure connection (HTTPS) to record audio.');
+      return;
+    }
+
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      onError?.(describeStartFailure(err));
+      onRecordingChange?.(false);
+      return;
+    }
+
+    const mimeType = pickMimeType();
+    const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    const chunks: Blob[] = [];
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: recorder.mimeType || mimeType });
+      stream.getTracks().forEach((track) => track.stop());
+      onRecordingChange?.(false);
+      if (blob.size > 0) onCapture(blob);
+    };
+
+    recorder.start();
+    recorderRef.current = recorder;
+    onRecordingChange?.(true);
   }
 
   function stopRecording() {
