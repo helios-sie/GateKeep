@@ -12,6 +12,8 @@ src/
     BottomNav/        The three-tab bar.
     Calendar/         Day navigator (Checklist + Diary).
     PhotoCapture/     Camera capture + photo strip. Not wired to a page yet.
+    TodayButton.tsx   "Today" quick-jump; hides itself when already on today.
+                     Used by Calendar via its optional onToday prop.
   pages/            One folder per routed view; each owns its own components.
     Checklist/        Tasks (id, date, text, status, createdAt) -> "tasks" store.
       components/      Editor, TaskSearch (search bar + month/year/all-time

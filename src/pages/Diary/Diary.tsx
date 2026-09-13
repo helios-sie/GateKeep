@@ -28,7 +28,7 @@ export function Diary() {
 
   return (
     <section className="page">
-      <Calendar date={date} onChange={setDate} />
+      <Calendar date={date} onChange={setDate} onToday={() => setDate(todayISO())} />
 
       {loading ? (
         <p className="diary-loading">Loading…</p>
