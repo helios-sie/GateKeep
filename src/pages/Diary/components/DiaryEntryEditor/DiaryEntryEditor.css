@@ -25,6 +25,13 @@
 .diary-entry-editor .inline-composer-input {
   min-height: 240px;
   max-height: 55vh;
+  /* Subtle aged-paper grain + warm stain blotches behind the writing —
+   * Diary only, the shared InlineComposer stays flat for Checklist. */
+  background-color: var(--surface);
+  background-image: var(--paper-texture);
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: auto, auto, 180px 180px;
+  background-blend-mode: multiply, multiply, normal;
 }
 
 .diary-entry-actions {

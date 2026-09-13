@@ -9,7 +9,13 @@
   margin: var(--sp-4);
   padding: var(--sp-4);
   padding-right: calc(var(--sp-4) + 36px);
-  background: var(--surface);
+  /* Same subtle aged-paper grain as the edit-mode box (index.css's
+   * --paper-texture) — Diary only. */
+  background-color: var(--surface);
+  background-image: var(--paper-texture);
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: auto, auto, 180px 180px;
+  background-blend-mode: multiply, multiply, normal;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
 }

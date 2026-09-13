@@ -22,9 +22,10 @@
   /* Writing a task or a diary entry uses the same "old-world writer" serif
    * as the saved result below — not the sans used for surrounding UI. */
   font-family: var(--font-serif);
+  font-variant-numeric: oldstyle-nums;
   font-size: 1rem;
   line-height: 1.5;
-  transition: border-color var(--ease);
+  transition: border-color var(--ease), background-color var(--ease);
 }
 
 .inline-composer-input:focus,

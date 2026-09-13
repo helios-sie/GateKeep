@@ -3,11 +3,32 @@
 
   /* UI chrome only — buttons, labels, nav, placeholders. */
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  /* The "old-world writer" voice — title, and the user's own written words
-   * (task text, diary entries). Book-style serifs only (no script/cursive),
-   * so it stays legible at small sizes; system-available, no font download. */
-  --font-serif: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', 'Bookman Old Style',
-    Palatino, Georgia, 'Times New Roman', serif;
+  /*
+   * The "old-world writer" voice — title, and the user's own written words
+   * (task text, diary entries). Aiming for a storybook/old-print serif, not
+   * a "plain generic serif": Constantia and Cambria are the two fonts most
+   * likely to actually be installed (they ship with Windows itself, since
+   * Vista — no Office needed, unlike Palatino Linotype/Book Antiqua/Bookman
+   * Old Style, which are Office fonts and may be absent on a bare Windows
+   * install — that gap is almost certainly why the previous stack fell all
+   * the way through to plain Times New Roman on a Windows machine). Hoefler
+   * Text and Baskerville are gorgeous old-style book faces that ship on
+   * every Mac/iPhone. Book-style only — no script/cursive — so it stays
+   * legible at small sizes; every name here is system-available, no font
+   * download.
+   */
+  --font-serif: Constantia, Cambria, Georgia, 'Hoefler Text', Baskerville,
+    'Palatino Linotype', 'Book Antiqua', 'Iowan Old Style', Palatino, 'Times New Roman', serif;
+
+  /*
+   * A very light aged-paper grain + a couple of warm stain-like blotches —
+   * layered CSS gradients plus an inlined SVG feTurbulence noise (no image
+   * download). Used only behind the Diary entry's text — see
+   * DiaryEntryEditor.css / DiaryEntryView.css.
+   */
+  --paper-texture: radial-gradient(ellipse at 12% 18%, rgba(156, 123, 51, 0.08), transparent 45%),
+    radial-gradient(ellipse at 88% 78%, rgba(124, 58, 44, 0.06), transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0 0.18 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 
   font-family: var(--font-sans);
 
@@ -98,9 +119,9 @@ textarea:focus-visible {
 .app-header h1 {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 1.4rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   color: var(--accent);
 }
 

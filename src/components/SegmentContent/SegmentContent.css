@@ -2,6 +2,9 @@
  * writer" serif, not the sans used for surrounding UI chrome. */
 .segment-content {
   font-family: var(--font-serif);
+  /* old-style (lowercase-height) numeral figures, where the chosen font
+   * supports them — a small, genuinely "hand-set print" detail */
+  font-variant-numeric: oldstyle-nums;
   line-height: 1.6;
 }
 
