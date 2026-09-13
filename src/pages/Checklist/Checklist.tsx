@@ -6,9 +6,14 @@ import { Editor } from './components/Editor/Editor';
 import { FilterBar } from './components/FilterBar/FilterBar';
 import { TaskList } from './components/TaskList/TaskList';
 
+interface ChecklistProps {
+  /** Deep-linked date (e.g. from Reminders), used instead of today on mount. */
+  initialDate?: string;
+}
+
 // Checklist page — day-scoped tasks backed by the "tasks" store.
-export function Checklist() {
-  const [date, setDate] = useState(todayISO());
+export function Checklist({ initialDate }: ChecklistProps) {
+  const [date, setDate] = useState(initialDate ?? todayISO());
   const { tasks, filter, setFilter, loading, addTask, updateStatus, removeTask } = useTasks(date);
 
   return (

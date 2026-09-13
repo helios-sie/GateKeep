@@ -17,10 +17,16 @@ src/
       components/      Editor, FilterBar, TaskList.
     Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
       components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor.
-    Reminders/        Placeholder.
+    Reminders/        All open tasks, one calendar month at a time, grouped by
+                     date (most recent first). Read-only; tapping a task
+                     deep-links to Checklist at that date.
+      components/      MonthSwitcher, DateGroup.
   hooks/
-    useHashRoute      #/checklist | #/diary | #/reminders (default checklist).
-    useTasks          Bridges the "tasks" store to React state.
+    useHashRoute      #/checklist | #/diary | #/reminders (default checklist),
+                     each with an optional deep-link param, e.g.
+                     #/checklist/2026-09-05. Also exports navigateTo().
+    useTasks          Bridges the "tasks" store to React state (Checklist).
+    useOpenTasksByMonth  Open tasks for a month, grouped by date (Reminders).
     useDiaryEntry     Loads/saves the single diary entry for a date.
     useVoiceInput     Wraps the browser's SpeechRecognition API.
   lib/

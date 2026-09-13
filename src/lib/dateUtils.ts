@@ -33,3 +33,27 @@ export function formatDisplay(dateISO: string): string {
     day: 'numeric',
   });
 }
+
+/** e.g. "September 9, 2026" — used for Reminders' date-group headings. */
+export function formatDateHeading(dateISO: string): string {
+  return parseISO(dateISO).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+export const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];

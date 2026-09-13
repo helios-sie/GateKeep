@@ -1,0 +1,41 @@
+.month-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.month-switcher button {
+  background: none;
+  border: 1px solid transparent;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--text-dim);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.month-switcher button:hover {
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+
+.month-switcher-selects {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.month-switcher-selects select {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-1) var(--sp-2);
+  cursor: pointer;
+}

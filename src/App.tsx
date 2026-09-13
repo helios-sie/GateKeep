@@ -5,7 +5,7 @@ import { Diary } from './pages/Diary/Diary';
 import { Reminders } from './pages/Reminders/Reminders';
 
 export function App() {
-  const { route, navigate } = useHashRoute();
+  const { route, param, navigate } = useHashRoute();
 
   return (
     <div className="app">
@@ -14,7 +14,7 @@ export function App() {
       </header>
 
       <main className="app-main">
-        {route === 'checklist' && <Checklist />}
+        {route === 'checklist' && <Checklist initialDate={param} />}
         {route === 'diary' && <Diary />}
         {route === 'reminders' && <Reminders />}
       </main>

@@ -1,0 +1,46 @@
+.reminders-list {
+  padding-bottom: var(--sp-4);
+}
+
+.reminders-loading {
+  margin: 0;
+  padding: var(--sp-5) var(--sp-4);
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 0.9rem;
+}
+
+.reminders-empty {
+  margin: var(--sp-5) var(--sp-4);
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.reminders-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  color: var(--gold);
+  font-size: 1.1rem;
+  margin-bottom: var(--sp-3);
+}
+
+.reminders-empty-title {
+  margin: 0 0 var(--sp-1);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.reminders-empty-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}

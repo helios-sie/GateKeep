@@ -7,6 +7,7 @@
 // logic and no domain function, so the two features can evolve separately:
 //
 //   tasks        -> Checklist page   saveTask / getTasksByDate / deleteTask
+//                -> Reminders page   getOpenTasksByMonth (read-only)
 //   diaryEntries -> Diary page       saveDiaryEntry / getDiaryEntriesByDate / deleteDiaryEntry
 //   photos       -> attachments      savePhoto / getPhoto / deletePhoto  (not yet wired to a page)
 //
@@ -83,6 +84,26 @@ export async function getTasksByDate(date: string): Promise<Task[]> {
     const t = db.transaction(TASKS_STORE, 'readonly');
     const req = t.objectStore(TASKS_STORE).index('by_date').getAll(date);
     req.onsuccess = () => resolve(req.result as Task[]);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+/**
+ * Every open (not done) task whose date falls in the given calendar month.
+ * Used by the Reminders page. `month` is 1-12.
+ */
+export async function getOpenTasksByMonth(year: number, month: number): Promise<Task[]> {
+  const db = await openDB();
+  const prefix = `${year}-${String(month).padStart(2, '0')}`;
+  return new Promise((resolve, reject) => {
+    const t = db.transaction(TASKS_STORE, 'readonly');
+    const req = t.objectStore(TASKS_STORE).getAll();
+    req.onsuccess = () => {
+      const rows = (req.result as Task[]).filter(
+        (task) => task.status === 'open' && task.date.startsWith(prefix)
+      );
+      resolve(rows);
+    };
     req.onerror = () => reject(req.error);
   });
 }
