@@ -1,7 +1,17 @@
+/*
+ * Same visual language as the edit-mode textarea (DiaryEntryEditor.css):
+ * var(--surface) background, var(--border-strong) border, var(--radius)
+ * corners. No fixed height here either — it grows with content and the
+ * page scrolls; only the boundary/background is new.
+ */
 .diary-entry-view {
   position: relative;
+  margin: var(--sp-4);
   padding: var(--sp-4);
   padding-right: calc(var(--sp-4) + 36px);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
 }
 
 .diary-entry-edit-btn {
@@ -16,7 +26,7 @@
   padding: 0;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  background: var(--surface);
+  background: var(--surface-raised);
   color: var(--text-dim);
   cursor: pointer;
 }
