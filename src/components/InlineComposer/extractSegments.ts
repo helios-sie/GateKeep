@@ -1,15 +1,15 @@
-import type { TaskSegment } from '../../../../types/task';
+import type { ContentSegment } from '../../types/content';
 
 /**
- * Walks the composer's contentEditable DOM and turns it back into an
- * ordered TaskSegment[]. Text nodes become text segments; an inline media
- * node (marked with data-media-type/data-media-id — see Editor.tsx's
+ * Walks a composer's contentEditable DOM and turns it back into an ordered
+ * ContentSegment[]. Text nodes become text segments; an inline media node
+ * (marked with data-media-type/data-media-id — see InlineComposer.tsx's
  * insertMediaNode) becomes a photo/audio segment, in whatever position it
  * appears. <br> and block-level wrapping (contentEditable's own <div>s from
  * pressing Enter) become '\n' so line breaks aren't lost.
  */
-export function extractSegments(root: HTMLElement): TaskSegment[] {
-  const segments: TaskSegment[] = [];
+export function extractSegments(root: HTMLElement): ContentSegment[] {
+  const segments: ContentSegment[] = [];
   let buffer = '';
 
   function flush() {

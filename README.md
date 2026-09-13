@@ -21,43 +21,59 @@ src/
                      attached media (never a new tab / OS default player).
                      Both have a Download button (a real <a download> on the
                      blob: URL); AudioPlayer also has a 0.25x-2x speed
-                     selector. Used by Checklist's tasks now; reusable for
-                     Diary later.
+                     selector. Used by both Checklist and Diary.
+    InlineComposer/   The WhatsApp-style composer itself: a contentEditable
+                     box (not a <textarea> — that can't hold real inline
+                     content) with camera + mic icons docked in its
+                     bottom-right corner. Tapping one saves the attachment
+                     via a caller-supplied SegmentMediaStore and inserts a
+                     real inline icon at the cursor, live — each with its
+                     own small ✕ badge (a separate element, not overlapping
+                     the icon's tap target) to discard + delete that
+                     blob before anything is submitted. Optionally seeded
+                     with `initialContent` to pre-fill an existing entry for
+                     editing. extractSegments.ts walks its DOM into an
+                     ordered ContentSegment[] on submit. Shared as-is by
+                     Checklist's Editor and Diary's DiaryEntryEditor — only
+                     the SegmentMediaStore (which store the icons read/
+                     write/delete through) differs between them.
+    SegmentContent/   Renders a ContentSegment[] in order — text as text,
+                     photo/audio as small inline tappable icons that open
+                     ImageLightbox/AudioPlayer. Read-only counterpart to
+                     InlineComposer (no discard button); shared by
+                     Checklist's TaskContent and Diary's DiaryEntryView.
     TodayButton.tsx   "Today" quick-jump; hides itself when already on today.
                      Used by Calendar via its optional onToday prop.
     SearchResultsList.tsx  "<snippet> — <date>" rows shared by Checklist's
                      and Diary's search (both just supply a data source).
   pages/            One folder per routed view; each owns its own components.
     Checklist/        Tasks -> "tasks" store. `content` is the authoritative
-                     shape: an ordered TaskSegment[] (text/photo/audio) so
-                     media sits inline exactly where it was inserted, not in
-                     a separate list; `text` is a derived plain-text mirror
-                     (kept in sync on save) that Reminders/search read
-                     without needing to know about segments. Tasks saved
-                     before this existed have no `content` — treated as one
-                     text segment (src/lib/taskContent.ts).
-      components/      Editor: a contentEditable box (not a <textarea> — a
-                       textarea can't hold real inline content) with a
-                       camera + mic icon docked in its bottom-right corner
-                       (WhatsApp-style). Tapping one saves via
-                       saveTaskPhoto/saveTaskAudio and inserts a real inline
-                       icon at the cursor, live — each with its own small ✕
-                       badge (its own element, not overlapping the icon's
-                       tap target) to discard + delete that attachment's
-                       blob before the task is ever saved. Submitting walks
-                       the DOM (Editor/extractSegments.ts) into an ordered
-                       TaskSegment[].
-                       TaskSearch (search bar + month/year/all-time scope +
-                       results, over the derived `text`).
-                       TaskList/TaskRow (swipe left or right to delete — the
-                       only way; disintegrate-into-particles animation via
-                       useSwipeToDelete) / TaskContent (renders a task's
-                       segments in order; photo/audio segments are small
-                       inline icons that open ImageLightbox/AudioPlayer).
-    Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
-      components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor /
-                       DiarySearch (icon that reveals a search bar; collapsed
-                       by default, unlike Checklist's always-visible one).
+                     shape: an ordered ContentSegment[] (text/photo/audio,
+                     types/content.ts) so media sits inline exactly where it
+                     was inserted, not in a separate list; `text` is a
+                     derived plain-text mirror (kept in sync on save,
+                     src/lib/content.ts) that Reminders/search read without
+                     needing to know about segments. Tasks saved before this
+                     existed have no `content` — treated as one text segment.
+                     Attachments live in "taskPhotos"/"taskAudio".
+      components/      Editor (thin: an InlineComposer + Add-task button,
+                       wired to saveTaskPhoto/saveTaskAudio), TaskSearch
+                       (search bar + month/year/all-time scope + results,
+                       over the derived `text`), TaskList/TaskRow (swipe
+                       left or right to delete — the only way; disintegrate-
+                       into-particles animation via useSwipeToDelete) /
+                       TaskContent (a SegmentContent wired to
+                       getTaskPhoto/getTaskAudio).
+    Diary/            One entry per date (id=date) -> "diaryEntries", same
+                     content/text split as tasks. Attachments live in their
+                     own "diaryPhotos"/"diaryAudio" — never the task stores.
+      components/      DiaryEntryEditor (an InlineComposer wired to
+                       saveDiaryPhoto/saveDiaryAudio, pre-filled via
+                       initialContent when editing) / DiaryEntryView (a
+                       SegmentContent wired to getDiaryPhoto/getDiaryAudio,
+                       read-only + pencil) / DiarySearch (icon that reveals
+                       a search bar; collapsed by default, unlike
+                       Checklist's always-visible one).
     Reminders/        All open tasks, one calendar month at a time, grouped by
                      date (most recent first). Read-only; tapping a task
                      deep-links to Checklist at that date.
@@ -74,19 +90,22 @@ src/
     useDiaryEntry     Loads/saves the single diary entry for a date.
   lib/
     db.ts            The only file that touches IndexedDB. Separate stores
-                     (tasks, taskPhotos, taskAudio, diaryEntries) with
-                     non-overlapping functions — taskPhotos/taskAudio are
-                     scoped to tasks only, never shared with diary media.
+                     (tasks, taskPhotos, taskAudio, diaryEntries,
+                     diaryPhotos, diaryAudio) with non-overlapping
+                     functions — the task/diary media stores never read or
+                     write each other.
+    content.ts       getContent (old-record fallback) / deriveText /
+                     extractMediaIds — the ContentSegment[] helpers shared
+                     by both Checklist and Diary (generic over anything
+                     shaped {text, content?}).
     dateUtils.ts     Small date-formatting helpers.
     userProfile.ts   Placeholder user name; swap here when a profile UI exists.
     taskEvents.ts    Pub-sub fired by db.ts on every task write, so Reminders
                      (and anything else reading "tasks") can refresh instantly
                      instead of only on its next mount.
-    taskContent.ts   getTaskContent (old-task fallback) / deriveText /
-                     extractMediaIds — the segment-array helpers shared by
-                     Checklist's composer, display, and delete-cleanup.
-  types/             task.ts (Task, TaskSegment), diaryEntry.ts, taskMedia.ts
-                     (TaskPhoto, TaskAudio).
+  types/             content.ts (ContentSegment — shared), task.ts (Task),
+                     diaryEntry.ts (DiaryEntry), taskMedia.ts (TaskPhoto,
+                     TaskAudio), diaryMedia.ts (DiaryPhoto, DiaryAudio).
   App.tsx            Header + routed page + BottomNav. No business logic.
 ```
 

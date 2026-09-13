@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Calendar } from '../../components/Calendar/Calendar';
 import { useDiaryEntry } from '../../hooks/useDiaryEntry';
+import { getContent } from '../../lib/content';
 import { todayISO } from '../../lib/dateUtils';
+import type { ContentSegment } from '../../types/content';
 import { DiaryEntryEditor } from './components/DiaryEntryEditor/DiaryEntryEditor';
 import { DiaryEntryView } from './components/DiaryEntryView/DiaryEntryView';
 import { DiarySearch } from './components/DiarySearch/DiarySearch';
@@ -34,8 +36,8 @@ export function Diary({ initialDate }: DiaryProps) {
     setEditing(false);
   }, [date]);
 
-  async function handleSave(text: string) {
-    await saveEntry(text);
+  async function handleSave(content: ContentSegment[]) {
+    await saveEntry(content);
     setEditing(false);
   }
 
@@ -52,12 +54,12 @@ export function Diary({ initialDate }: DiaryProps) {
         ) : showEditor ? (
           <DiaryEntryEditor
             key={date}
-            value={entry ? entry.text : null}
+            initialContent={entry ? getContent(entry) : null}
             onSave={handleSave}
             onCancel={entry ? () => setEditing(false) : undefined}
           />
         ) : (
-          <DiaryEntryView text={entry.text} onEdit={() => setEditing(true)} />
+          <DiaryEntryView content={getContent(entry)} onEdit={() => setEditing(true)} />
         ))}
     </section>
   );

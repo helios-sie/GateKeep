@@ -14,38 +14,17 @@
 }
 
 /*
- * One journal entry. It must never truncate or clip long text: the field has
- * a bounded height and scrolls internally past that, so the full entry is
- * always readable regardless of length. No character limit anywhere.
+ * A journal entry must never truncate or clip long text: give the shared
+ * composer box (InlineComposer.css) a taller bound than its Checklist
+ * default and let it keep scrolling internally past that, so the full
+ * entry is always readable regardless of length. No character limit.
  *
  * Diary entries have no status, so there is deliberately no "done" /
  * strikethrough styling here — that is Checklist-only behaviour.
  */
-.diary-entry-text {
-  width: 100%;
+.diary-entry-editor .inline-composer-input {
   min-height: 240px;
   max-height: 55vh;
-  overflow-y: auto;
-  resize: vertical;
-  border-radius: var(--radius);
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
-  color: var(--text);
-  padding: var(--sp-3);
-  font-family: inherit;
-  font-size: 1rem;
-  line-height: 1.6;
-  text-decoration: none;
-  transition: border-color var(--ease);
-}
-
-.diary-entry-text::placeholder {
-  color: var(--text-faint);
-}
-
-.diary-entry-text:focus-visible {
-  border-color: var(--accent);
-  outline: none;
 }
 
 .diary-entry-actions {

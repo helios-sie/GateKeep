@@ -1,15 +1,6 @@
-export type TaskStatus = 'open' | 'done';
+import type { ContentSegment } from './content';
 
-/**
- * One piece of a task's inline content — a run of plain text, or a
- * reference to a photo/audio attachment stored in the "taskPhotos" /
- * "taskAudio" stores (src/lib/db.ts). Segments render in order, so media
- * appears exactly where it was inserted in the text, not in a separate list.
- */
-export type TaskSegment =
-  | { type: 'text'; value: string }
-  | { type: 'photo'; id: string }
-  | { type: 'audio'; id: string };
+export type TaskStatus = 'open' | 'done';
 
 /**
  * A checklist item for a given day. Belongs to the Checklist page and lives
@@ -29,9 +20,9 @@ export interface Task {
    * Ordered rich content — the authoritative shape for the Checklist
    * composer/display. Tasks saved before this existed have no `content` at
    * all; treat that as a single `{type:'text', value: text}` segment (see
-   * getTaskContent in src/lib/taskContent.ts) rather than assuming it's set.
+   * getContent in src/lib/content.ts) rather than assuming it's set.
    */
-  content?: TaskSegment[];
+  content?: ContentSegment[];
   status: TaskStatus;
   createdAt: number;
 }

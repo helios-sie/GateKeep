@@ -67,7 +67,7 @@
   cursor: pointer;
 }
 
-.task-item.done .task-content {
+.task-item.done .segment-content {
   text-decoration: line-through;
   color: var(--text-faint);
 }

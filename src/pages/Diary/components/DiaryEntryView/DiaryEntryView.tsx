@@ -1,14 +1,19 @@
+import { SegmentContent } from '../../../../components/SegmentContent/SegmentContent';
+import { getDiaryAudio, getDiaryPhoto } from '../../../../lib/db';
+import type { ContentSegment } from '../../../../types/content';
 import './DiaryEntryView.css';
 
 interface DiaryEntryViewProps {
-  text: string;
+  content: ContentSegment[];
   onEdit: () => void;
 }
 
-// Read-only view of an existing entry. The text is plain flowing content — it
-// grows with its length and the page scrolls; there is no fixed-height box and
-// no internal scrollbar. Tapping the pencil switches the page to edit mode.
-export function DiaryEntryView({ text, onEdit }: DiaryEntryViewProps) {
+// Read-only view of an existing entry. The content flows like a normal
+// paragraph — it grows with its length and the page scrolls; there is no
+// fixed-height box and no internal scrollbar. Inline photo/audio icons are
+// tappable, same as Checklist's, opening the shared ImageLightbox/
+// AudioPlayer. Tapping the pencil switches the page to edit mode.
+export function DiaryEntryView({ content, onEdit }: DiaryEntryViewProps) {
   return (
     <div className="diary-entry-view">
       <button
@@ -33,7 +38,9 @@ export function DiaryEntryView({ text, onEdit }: DiaryEntryViewProps) {
         </svg>
       </button>
 
-      <p className="diary-entry-body">{text}</p>
+      <div className="diary-entry-body">
+        <SegmentContent content={content} getPhoto={getDiaryPhoto} getAudio={getDiaryAudio} />
+      </div>
     </div>
   );
 }

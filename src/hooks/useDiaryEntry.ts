@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { deriveText } from '../lib/content';
 import { getDiaryEntriesByDate, saveDiaryEntry } from '../lib/db';
+import type { ContentSegment } from '../types/content';
 import type { DiaryEntry } from '../types/diaryEntry';
 
 // The Diary page is one-entry-per-date, like a real journal page. This hook
@@ -26,13 +28,15 @@ export function useDiaryEntry(date: string) {
   }, [reload]);
 
   const saveEntry = useCallback(
-    async (text: string) => {
+    async (content: ContentSegment[]) => {
       const existing = (await getDiaryEntriesByDate(date))[0];
-      if (!existing && text.trim() === '') return;
+      const hasContent = content.some((s) => s.type !== 'text' || s.value.trim());
+      if (!existing && !hasContent) return;
 
+      const text = deriveText(content);
       const record: DiaryEntry = existing
-        ? { ...existing, text }
-        : { id: date, date, text, createdAt: Date.now() };
+        ? { ...existing, text, content }
+        : { id: date, date, text, content, createdAt: Date.now() };
 
       await saveDiaryEntry(record);
       await reload();

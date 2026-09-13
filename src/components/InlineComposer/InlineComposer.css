@@ -1,0 +1,143 @@
+.inline-composer {
+  position: relative;
+}
+
+/* contentEditable box, styled to match the old textarea look. Pages that
+ * need a different size (e.g. Diary's tall journal box) override
+ * .inline-composer-input's min/max-height via their own wrapper selector. */
+.inline-composer-input {
+  width: 100%;
+  min-height: 3.4em;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: inherit;
+  padding: var(--sp-3);
+  /* room for the docked icons so typed text never runs under them */
+  padding-right: 64px;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color var(--ease);
+}
+
+.inline-composer-input:focus,
+.inline-composer-input:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.inline-composer-input.is-empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+/* An inline photo/audio attachment, live in the composer — a tappable icon
+ * (opens the preview) plus a small ✕ badge (discards it), each its own
+ * element with its own hit area so the two taps can never be confused. */
+.composer-media {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+  margin: 0 4px 0 2px;
+}
+
+.composer-media-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.composer-media-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.composer-media-icon:hover {
+  border-color: var(--accent);
+}
+
+.composer-media-remove {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--danger);
+  color: #fff;
+  font-size: 9px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.composer-media-remove:hover {
+  filter: brightness(1.12);
+}
+
+/* Camera + mic icons docked inside the box's bottom-right corner,
+ * WhatsApp-message-box style. */
+.inline-composer-actions {
+  position: absolute;
+  right: var(--sp-2);
+  bottom: var(--sp-2);
+  display: flex;
+  gap: 4px;
+}
+
+.inline-composer-icon-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+.inline-composer-icon-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.inline-composer-icon-btn.mic-active {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.inline-composer-error {
+  margin: var(--sp-2) 0 0;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
