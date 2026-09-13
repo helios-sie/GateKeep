@@ -11,10 +11,12 @@ src/
   components/        Shared UI, used by more than one page.
     BottomNav/        The three-tab bar.
     Calendar/         Day navigator (Checklist + Diary).
-    PhotoCapture/     Photo file input (camera on mobile, file picker on
-                     desktop). Storage-agnostic — hands the caller a File.
-    AudioCapture/     Records via MediaRecorder, or picks an audio file as a
-                     fallback. Same storage-agnostic split as PhotoCapture.
+    PhotoCapture/     Headless: renders a hidden camera/file input, exposes
+                     ref.current.open(). Caller supplies its own trigger icon
+                     and decides where to persist the returned File.
+    AudioCapture/     Headless: records via MediaRecorder, exposes
+                     ref.current.toggle() + an onRecordingChange callback.
+                     Same storage-agnostic, caller-supplies-the-icon split.
     MediaViewer/      ImageLightbox + AudioPlayer — in-app modal viewers for
                      attached media (never a new tab / OS default player).
                      Used by Checklist's tasks now; reusable for Diary later.
@@ -23,16 +25,28 @@ src/
     SearchResultsList.tsx  "<snippet> — <date>" rows shared by Checklist's
                      and Diary's search (both just supply a data source).
   pages/            One folder per routed view; each owns its own components.
-    Checklist/        Tasks (id, date, text, status, createdAt, photoIds,
-                     audioIds) -> "tasks" store.
-      components/      Editor (attach photo/audio when composing, via
-                       PhotoCapture/AudioCapture -> saveTaskPhoto/
-                       saveTaskAudio), TaskSearch (search bar + month/year/
-                       all-time scope + results), TaskList/TaskRow (swipe
-                       left or right to delete — the only way;
-                       disintegrate-into-particles animation via
-                       useSwipeToDelete; TaskAttachments renders thumbnails/
-                       chips that open ImageLightbox/AudioPlayer).
+    Checklist/        Tasks -> "tasks" store. `content` is the authoritative
+                     shape: an ordered TaskSegment[] (text/photo/audio) so
+                     media sits inline exactly where it was inserted, not in
+                     a separate list; `text` is a derived plain-text mirror
+                     (kept in sync on save) that Reminders/search read
+                     without needing to know about segments. Tasks saved
+                     before this existed have no `content` — treated as one
+                     text segment (src/lib/taskContent.ts).
+      components/      Editor: a plain textarea with a camera + mic icon
+                       docked in its bottom-right corner (WhatsApp-style).
+                       Tapping one saves via saveTaskPhoto/saveTaskAudio and
+                       inserts a ⟦photo:id⟧/⟦audio:id⟧ marker at the cursor
+                       (Editor/taskMarkers.ts parses these into segments on
+                       submit — the one place "rich content in a plain
+                       textarea" is represented as text).
+                       TaskSearch (search bar + month/year/all-time scope +
+                       results, over the derived `text`).
+                       TaskList/TaskRow (swipe left or right to delete — the
+                       only way; disintegrate-into-particles animation via
+                       useSwipeToDelete) / TaskContent (renders a task's
+                       segments in order; photo/audio segments are small
+                       inline icons that open ImageLightbox/AudioPlayer).
     Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
       components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor /
                        DiarySearch (icon that reveals a search bar; collapsed
@@ -51,7 +65,6 @@ src/
                      and useDiaryEntrySearch are one-line wrappers around it.
     useOpenTasksByMonth  Open tasks for a month, grouped by date (Reminders).
     useDiaryEntry     Loads/saves the single diary entry for a date.
-    useVoiceInput     Wraps the browser's SpeechRecognition API.
   lib/
     db.ts            The only file that touches IndexedDB. Separate stores
                      (tasks, taskPhotos, taskAudio, diaryEntries) with
@@ -62,7 +75,11 @@ src/
     taskEvents.ts    Pub-sub fired by db.ts on every task write, so Reminders
                      (and anything else reading "tasks") can refresh instantly
                      instead of only on its next mount.
-  types/             task.ts, diaryEntry.ts, photo.ts.
+    taskContent.ts   getTaskContent (old-task fallback) / deriveText /
+                     extractMediaIds — the segment-array helpers shared by
+                     Checklist's composer, display, and delete-cleanup.
+  types/             task.ts (Task, TaskSegment), diaryEntry.ts, taskMedia.ts
+                     (TaskPhoto, TaskAudio).
   App.tsx            Header + routed page + BottomNav. No business logic.
 ```
 

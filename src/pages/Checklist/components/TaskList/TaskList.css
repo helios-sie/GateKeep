@@ -67,11 +67,7 @@
   cursor: pointer;
 }
 
-.task-text {
-  line-height: 1.5;
-}
-
-.task-item.done .task-text {
+.task-item.done .task-content {
   text-decoration: line-through;
   color: var(--text-faint);
 }

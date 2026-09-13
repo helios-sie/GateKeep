@@ -3,6 +3,10 @@
   border-bottom: 1px solid var(--border);
 }
 
+.editor-input-wrap {
+  position: relative;
+}
+
 .editor textarea {
   width: 100%;
   resize: vertical;
@@ -11,6 +15,8 @@
   background: var(--surface);
   color: inherit;
   padding: var(--sp-3);
+  /* room for the docked icons so typed text never runs under them */
+  padding-right: 64px;
   font-family: inherit;
   font-size: 1rem;
   line-height: 1.5;
@@ -26,52 +32,61 @@
   outline: none;
 }
 
-.editor-toolbar {
+/* Camera + mic icons docked inside the textarea's bottom-right corner,
+ * WhatsApp-message-box style. */
+.editor-input-actions {
+  position: absolute;
+  right: var(--sp-2);
+  bottom: var(--sp-2);
   display: flex;
-  gap: var(--sp-2);
-  margin-top: var(--sp-3);
-  flex-wrap: wrap;
+  gap: 4px;
 }
 
-.editor-toolbar button {
+.editor-icon-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--border-strong);
-  background: var(--surface);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
   color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+.editor-icon-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.editor-icon-btn.mic-active {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.editor-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--sp-3);
+}
+
+.editor-toolbar button.primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 550;
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.9rem;
 }
 
-.editor-toolbar button:hover {
-  color: var(--text);
-  border-color: var(--accent);
-}
-
-.editor-toolbar button.primary {
-  margin-left: auto;
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-contrast);
-  font-weight: 550;
-}
-
 .editor-toolbar button.primary:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
-  color: var(--accent-contrast);
-}
-
-.editor-toolbar button.mic-active {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: var(--accent-contrast);
-}
-
-.editor-attachment-count {
-  display: flex;
-  gap: var(--sp-3);
-  margin-top: var(--sp-2);
-  font-size: 0.8rem;
-  color: var(--text-dim);
 }

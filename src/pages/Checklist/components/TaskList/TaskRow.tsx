@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { Task, TaskStatus } from '../../../../types/task';
-import { TaskAttachments } from './TaskAttachments';
+import { TaskContent } from './TaskContent';
 import type { Particle } from './useSwipeToDelete';
 import { useSwipeToDelete } from './useSwipeToDelete';
 import './TaskRow.css';
@@ -59,10 +59,8 @@ export function TaskRow({ task, onToggleStatus, onDelete }: TaskRowProps) {
             checked={task.status === 'done'}
             onChange={(e) => onToggleStatus(task.id, e.target.checked ? 'done' : 'open')}
           />
-          <span className="task-text">{task.text}</span>
+          <TaskContent task={task} />
         </label>
-
-        <TaskAttachments photoIds={task.photoIds ?? []} audioIds={task.audioIds ?? []} />
       </div>
 
       {particles.length > 0 && (

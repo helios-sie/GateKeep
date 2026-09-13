@@ -14,12 +14,11 @@
 }
 
 /* One level in so the particle overlay can sit alongside it at the row's
- * full padded bounds. Column layout: the checkbox/text row (still a row
- * itself, via ".task-item label" in TaskList.css), then attachments below. */
+ * full padded bounds; otherwise just wraps ".task-item label" (TaskList.css)
+ * at the row's full width. Inline photo/audio icons live inside that label,
+ * as part of TaskContent's text flow — not a separate row here. */
 .task-row-content {
   display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
   width: 100%;
 }
 

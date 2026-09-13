@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { deleteTask, deleteTaskAudio, deleteTaskPhoto, getTasksByDate, saveTask } from '../lib/db';
 import { generateId } from '../lib/id';
-import type { Task, TaskStatus } from '../types/task';
+import { deriveText, extractMediaIds, getTaskContent } from '../lib/taskContent';
+import type { Task, TaskSegment, TaskStatus } from '../types/task';
 
 // Bridges the "tasks" store (src/lib/db.ts) to React state for the Checklist
 // page. Knows nothing about diary entries.
@@ -22,15 +23,14 @@ export function useTasks(date: string) {
   }, [reload]);
 
   const addTask = useCallback(
-    async (text: string, photoIds: string[] = [], audioIds: string[] = []) => {
+    async (content: TaskSegment[]) => {
       const task: Task = {
         id: generateId(),
         date,
-        text,
+        text: deriveText(content),
+        content,
         status: 'open',
         createdAt: Date.now(),
-        photoIds,
-        audioIds,
       };
       await saveTask(task);
       await reload();
@@ -55,9 +55,10 @@ export function useTasks(date: string) {
       // A task owns its attached media — clean it up so it doesn't linger
       // orphaned in taskPhotos/taskAudio forever.
       if (target) {
+        const { photoIds, audioIds } = extractMediaIds(getTaskContent(target));
         await Promise.all([
-          ...(target.photoIds ?? []).map((photoId) => deleteTaskPhoto(photoId)),
-          ...(target.audioIds ?? []).map((audioId) => deleteTaskAudio(audioId)),
+          ...photoIds.map((photoId) => deleteTaskPhoto(photoId)),
+          ...audioIds.map((audioId) => deleteTaskAudio(audioId)),
         ]);
       }
       await reload();
