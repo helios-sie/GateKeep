@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
+import { SearchResultsList } from '../../../components/SearchResultsList';
 import { navigateTo } from '../../../hooks/useHashRoute';
+import { SEARCH_SCOPE_LABELS, SEARCH_SCOPES } from '../../../hooks/useDatedSearch';
+import type { SearchScope } from '../../../hooks/useDatedSearch';
 import { useTaskSearch } from '../../../hooks/useTaskSearch';
-import type { SearchScope } from '../../../hooks/useTaskSearch';
-import { formatDateHeading } from '../../../lib/dateUtils';
 import './TaskSearch.css';
-
-const SCOPE_LABELS: Record<SearchScope, string> = {
-  month: 'This month',
-  year: 'This year',
-  all: 'Entire calendar',
-};
-const SCOPES = Object.keys(SCOPE_LABELS) as SearchScope[];
 
 interface TaskSearchProps {
   /** Fires whenever the search box has a non-empty query, so the page can
@@ -21,6 +15,7 @@ interface TaskSearchProps {
 // Search bar + scope dropdown + results list, all in one place — kept out of
 // TaskList/Editor entirely. When the query is empty this renders just the
 // bar; the page below shows its normal current-date task list instead.
+// The matching/scoping/results-list pieces are shared with Diary's search.
 export function TaskSearch({ onActiveChange }: TaskSearchProps) {
   const [query, setQuery] = useState('');
   const [scope, setScope] = useState<SearchScope>('month');
@@ -53,9 +48,9 @@ export function TaskSearch({ onActiveChange }: TaskSearchProps) {
           onChange={(e) => setScope(e.target.value as SearchScope)}
           aria-label="Search scope"
         >
-          {SCOPES.map((key) => (
+          {SEARCH_SCOPES.map((key) => (
             <option key={key} value={key}>
-              {SCOPE_LABELS[key]}
+              {SEARCH_SCOPE_LABELS[key]}
             </option>
           ))}
         </select>
@@ -63,29 +58,12 @@ export function TaskSearch({ onActiveChange }: TaskSearchProps) {
 
       {active && (
         <div className="task-search-results">
-          {loading ? (
-            <p className="task-search-status">Searching…</p>
-          ) : results.length === 0 ? (
-            <p className="task-search-status">No matching tasks.</p>
-          ) : (
-            <ul className="task-search-list">
-              {results.map((task) => (
-                <li key={task.id}>
-                  <button
-                    type="button"
-                    className="task-search-result"
-                    onClick={() => goToTask(task.date)}
-                  >
-                    <span className="task-search-result-text">{task.text}</span>
-                    <span className="task-search-result-date">
-                      {' '}
-                      — {formatDateHeading(task.date)}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <SearchResultsList
+            loading={loading}
+            results={results}
+            onSelect={goToTask}
+            emptyLabel="No matching tasks."
+          />
         </div>
       )}
     </div>

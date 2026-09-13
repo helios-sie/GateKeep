@@ -14,6 +14,8 @@ src/
     PhotoCapture/     Camera capture + photo strip. Not wired to a page yet.
     TodayButton.tsx   "Today" quick-jump; hides itself when already on today.
                      Used by Calendar via its optional onToday prop.
+    SearchResultsList.tsx  "<snippet> — <date>" rows shared by Checklist's
+                     and Diary's search (both just supply a data source).
   pages/            One folder per routed view; each owns its own components.
     Checklist/        Tasks (id, date, text, status, createdAt) -> "tasks" store.
       components/      Editor, TaskSearch (search bar + month/year/all-time
@@ -21,7 +23,9 @@ src/
                        right to delete — the only way; disintegrate-into-
                        particles animation via useSwipeToDelete).
     Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
-      components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor.
+      components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor /
+                       DiarySearch (icon that reveals a search bar; collapsed
+                       by default, unlike Checklist's always-visible one).
     Reminders/        All open tasks, one calendar month at a time, grouped by
                      date (most recent first). Read-only; tapping a task
                      deep-links to Checklist at that date.
@@ -31,8 +35,9 @@ src/
                      each with an optional deep-link param, e.g.
                      #/checklist/2026-09-05. Also exports navigateTo().
     useTasks          Bridges the "tasks" store to React state (Checklist).
-    useTaskSearch     Full-text search over "tasks", scoped to a month/year/
-                     all time (Checklist's TaskSearch).
+    useDatedSearch    Shared keyword + month/year/all-time scope matching
+                     over any {date, text, createdAt} store. useTaskSearch
+                     and useDiaryEntrySearch are one-line wrappers around it.
     useOpenTasksByMonth  Open tasks for a month, grouped by date (Reminders).
     useDiaryEntry     Loads/saves the single diary entry for a date.
     useVoiceInput     Wraps the browser's SpeechRecognition API.

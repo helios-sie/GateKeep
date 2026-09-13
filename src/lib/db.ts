@@ -8,7 +8,7 @@
 //
 //   tasks        -> Checklist page   saveTask / getTasksByDate / deleteTask / getAllTasks (search)
 //                -> Reminders page   getOpenTasksByMonth (read-only)
-//   diaryEntries -> Diary page       saveDiaryEntry / getDiaryEntriesByDate / deleteDiaryEntry
+//   diaryEntries -> Diary page       saveDiaryEntry / getDiaryEntriesByDate / deleteDiaryEntry / getAllDiaryEntries (search)
 //   photos       -> attachments      savePhoto / getPhoto / deletePhoto  (not yet wired to a page)
 //
 // `openDB` and `tx` below are storage plumbing only (connection + transaction
@@ -138,6 +138,12 @@ export async function getDiaryEntriesByDate(date: string): Promise<DiaryEntry[]>
     req.onsuccess = () => resolve(req.result as DiaryEntry[]);
     req.onerror = () => reject(req.error);
   });
+}
+
+/** Every diary entry, any date. Used for full-text search on the Diary page. */
+export async function getAllDiaryEntries(): Promise<DiaryEntry[]> {
+  const db = await openDB();
+  return tx(db, DIARY_STORE, 'readonly', (s) => s.getAll());
 }
 
 // --- Photos (attachments; not yet wired into either page) ------------------

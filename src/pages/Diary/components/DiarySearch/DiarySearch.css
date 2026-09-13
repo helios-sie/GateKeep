@@ -1,0 +1,75 @@
+.diary-search {
+  padding: var(--sp-2) var(--sp-4) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.diary-search-toggle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.diary-search-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.diary-search-panel {
+  width: 100%;
+  padding-top: var(--sp-3);
+}
+
+.diary-search-bar {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.diary-search-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--sp-2) var(--sp-4);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.diary-search-input::placeholder {
+  color: var(--text-faint);
+}
+
+.diary-search-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.diary-search-scope {
+  flex: none;
+  max-width: 40%;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 0 var(--sp-2);
+  cursor: pointer;
+}
+
+.diary-search-panel .search-results-list,
+.diary-search-panel .search-results-status {
+  margin-top: var(--sp-3);
+}

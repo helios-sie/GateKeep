@@ -15,7 +15,7 @@ export function App() {
 
       <main className="app-main">
         {route === 'checklist' && <Checklist initialDate={param} />}
-        {route === 'diary' && <Diary />}
+        {route === 'diary' && <Diary initialDate={param} />}
         {route === 'reminders' && <Reminders />}
       </main>
 
