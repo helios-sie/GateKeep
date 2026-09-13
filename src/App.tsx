@@ -10,7 +10,7 @@ export function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Gatekeep</h1>
+        <h1>GateKeep</h1>
       </header>
 
       <main className="app-main">

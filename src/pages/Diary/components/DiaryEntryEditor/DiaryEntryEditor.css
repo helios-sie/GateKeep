@@ -7,8 +7,8 @@
 
 .diary-prompt {
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-family: var(--font-script);
+  font-size: 1.4rem;
   color: var(--accent);
   letter-spacing: 0.01em;
 }
@@ -29,9 +29,9 @@
    * Diary only, the shared InlineComposer stays flat for Checklist. */
   background-color: var(--surface);
   background-image: var(--paper-texture);
-  background-repeat: no-repeat, no-repeat, repeat;
-  background-size: auto, auto, 180px 180px;
-  background-blend-mode: multiply, multiply, normal;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+  background-size: auto, auto, 100% 100%, 100% 100%, 100% 100%, 180px 180px;
+  background-blend-mode: multiply, multiply, normal, normal, normal, normal;
 }
 
 .diary-entry-actions {

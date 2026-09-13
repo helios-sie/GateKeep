@@ -1,6 +1,6 @@
 {
-  "name": "Gatekeep",
-  "short_name": "Gatekeep",
+  "name": "GateKeep",
+  "short_name": "GateKeep",
   "description": "A private, on-device journal with notes, voice, and photos.",
   "start_url": "/GateKeep/",
   "scope": "/GateKeep/",

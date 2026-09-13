@@ -13,9 +13,9 @@
    * --paper-texture) — Diary only. */
   background-color: var(--surface);
   background-image: var(--paper-texture);
-  background-repeat: no-repeat, no-repeat, repeat;
-  background-size: auto, auto, 180px 180px;
-  background-blend-mode: multiply, multiply, normal;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+  background-size: auto, auto, 100% 100%, 100% 100%, 100% 100%, 180px 180px;
+  background-blend-mode: multiply, multiply, normal, normal, normal, normal;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
 }

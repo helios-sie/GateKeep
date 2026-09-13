@@ -37,8 +37,8 @@
 
 .task-list-empty-title {
   margin: 0 0 var(--sp-1);
-  font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-family: var(--font-script);
+  font-size: 1.3rem;
   color: var(--text);
 }
 
@@ -56,7 +56,13 @@
   padding: var(--sp-3);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--surface);
+  /* Same aged-letter paper grain as the Diary entry box (index.css's
+   * --paper-texture) — a faint scrap-of-paper feel behind each task. */
+  background-color: var(--surface);
+  background-image: var(--paper-texture);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+  background-size: auto, auto, 100% 100%, 100% 100%, 100% 100%, 180px 180px;
+  background-blend-mode: multiply, multiply, normal, normal, normal, normal;
 }
 
 .task-item label {

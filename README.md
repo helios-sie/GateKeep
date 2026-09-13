@@ -1,4 +1,4 @@
-# Gatekeep
+# GateKeep
 
 A private, on-device PWA with three independent pages — Reminders, Checklist,
 and Diary — switched from a bottom tab bar. All data lives in the browser's
