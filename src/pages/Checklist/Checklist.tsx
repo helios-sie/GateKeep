@@ -27,7 +27,7 @@ export function Checklist({ initialDate }: ChecklistProps) {
 
   return (
     <section className="page">
-      <Calendar date={date} onChange={setDate} />
+      <Calendar date={date} onChange={setDate} onToday={() => setDate(todayISO())} />
       <Editor onSubmit={addTask} />
       <TaskSearch onActiveChange={setSearching} />
       {!searching && (

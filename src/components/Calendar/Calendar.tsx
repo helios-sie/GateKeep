@@ -4,9 +4,15 @@ import './Calendar.css';
 interface CalendarProps {
   date: string;
   onChange: (date: string) => void;
+  /** When provided, shows a "Today" quick-jump button — hidden whenever
+   *  `date` already is today. Opt-in per page: Diary doesn't pass this, so
+   *  it never renders there; only Checklist does. */
+  onToday?: () => void;
 }
 
-export function Calendar({ date, onChange }: CalendarProps) {
+export function Calendar({ date, onChange, onToday }: CalendarProps) {
+  const isToday = date === todayISO();
+
   return (
     <div className="calendar">
       <button onClick={() => onChange(addDays(date, -1))} aria-label="Previous day">
@@ -26,6 +32,12 @@ export function Calendar({ date, onChange }: CalendarProps) {
           }}
         />
         <span>{formatDisplay(date)}</span>
+
+        {onToday && !isToday && (
+          <button type="button" className="calendar-today" onClick={onToday}>
+            Today
+          </button>
+        )}
       </div>
 
       <button

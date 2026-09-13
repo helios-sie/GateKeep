@@ -49,3 +49,23 @@
   font-size: 0.8rem;
   color: var(--text-faint);
 }
+
+.calendar-today {
+  margin-top: 2px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 1px var(--sp-3);
+  cursor: pointer;
+}
+
+.calendar-today:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
