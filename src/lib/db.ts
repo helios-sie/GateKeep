@@ -29,7 +29,14 @@ import type { Task } from '../types/task';
 import type { TaskAudio, TaskPhoto } from '../types/taskMedia';
 
 const DB_NAME = 'gatekeep-db';
-const DB_VERSION = 3;
+// Bumping this is the ONLY thing that makes onupgradeneeded run again for a
+// browser that already has the database open at an older version — adding a
+// createObjectStore call without also bumping this number is a no-op for
+// anyone whose IndexedDB is already sitting at the current version (exactly
+// what happened here: diaryPhotos/diaryAudio's creation code shipped without
+// this number changing, so any database already at 3 skipped it entirely
+// and saveDiaryPhoto/saveDiaryAudio failed with NotFoundError).
+const DB_VERSION = 4;
 
 const TASKS_STORE = 'tasks';
 const TASK_PHOTOS_STORE = 'taskPhotos';
