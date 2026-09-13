@@ -1,0 +1,61 @@
+/*
+ * Swipe-to-delete visuals for a single row. Base .task-item chrome (border,
+ * background, padding, checkbox/text/delete-button layout) lives in
+ * TaskList.css — this file only adds what the gesture/animation needs.
+ */
+
+.task-item {
+  position: relative;
+  touch-action: pan-y; /* let vertical scroll pass through; horizontal is ours */
+}
+
+.task-item-dragging {
+  will-change: transform;
+}
+
+/* Mirrors the old flex-row layout .task-item used to apply directly, now
+ * one level in so the particle overlay can sit alongside it at the row's
+ * full padded bounds. */
+.task-row-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  width: 100%;
+}
+
+.task-item-disintegrating .task-row-content {
+  animation: task-content-dissolve 220ms ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes task-content-dissolve {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+.task-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.task-particle {
+  position: absolute;
+  border-radius: 1px;
+  background: var(--accent);
+  animation: task-particle-scatter 520ms ease-out var(--delay) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes task-particle-scatter {
+  from {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.3);
+    opacity: 0;
+  }
+}

@@ -1,4 +1,5 @@
 import type { Task, TaskStatus } from '../../../../types/task';
+import { TaskRow } from './TaskRow';
 import './TaskList.css';
 
 interface TaskListProps {
@@ -37,20 +38,7 @@ export function TaskList({ tasks, loading, onToggleStatus, onDelete }: TaskListP
   return (
     <ul className="task-list">
       {tasks.map((task) => (
-        <li key={task.id} className={`task-item ${task.status}`}>
-          <label>
-            <input
-              type="checkbox"
-              checked={task.status === 'done'}
-              onChange={(e) => onToggleStatus(task.id, e.target.checked ? 'done' : 'open')}
-            />
-            <span className="task-text">{task.text}</span>
-          </label>
-
-          <button className="task-delete" onClick={() => onDelete(task.id)} aria-label="Delete task">
-            ✕
-          </button>
-        </li>
+        <TaskRow key={task.id} task={task} onToggleStatus={onToggleStatus} onDelete={onDelete} />
       ))}
     </ul>
   );

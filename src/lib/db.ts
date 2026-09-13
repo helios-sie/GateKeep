@@ -14,6 +14,7 @@
 // `openDB` and `tx` below are storage plumbing only (connection + transaction
 // wrappers); they carry no knowledge of tasks or diary entries.
 
+import { notifyTasksChanged } from './taskEvents';
 import type { DiaryEntry } from '../types/diaryEntry';
 import type { PhotoAttachment } from '../types/photo';
 import type { Task } from '../types/task';
@@ -71,11 +72,13 @@ function tx<T>(
 export async function saveTask(task: Task): Promise<void> {
   const db = await openDB();
   await tx(db, TASKS_STORE, 'readwrite', (s) => s.put(task));
+  notifyTasksChanged();
 }
 
 export async function deleteTask(id: string): Promise<void> {
   const db = await openDB();
   await tx(db, TASKS_STORE, 'readwrite', (s) => s.delete(id));
+  notifyTasksChanged();
 }
 
 export async function getTasksByDate(date: string): Promise<Task[]> {

@@ -14,7 +14,8 @@ src/
     PhotoCapture/     Camera capture + photo strip. Not wired to a page yet.
   pages/            One folder per routed view; each owns its own components.
     Checklist/        Tasks (id, date, text, status, createdAt) -> "tasks" store.
-      components/      Editor, FilterBar, TaskList.
+      components/      Editor, FilterBar, TaskList, TaskRow (swipe-to-delete +
+                       useSwipeToDelete, its "disintegrate" animation).
     Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
       components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor.
     Reminders/        All open tasks, one calendar month at a time, grouped by
@@ -34,6 +35,9 @@ src/
                      (tasks, diaryEntries, photos) with non-overlapping functions.
     dateUtils.ts     Small date-formatting helpers.
     userProfile.ts   Placeholder user name; swap here when a profile UI exists.
+    taskEvents.ts    Pub-sub fired by db.ts on every task write, so Reminders
+                     (and anything else reading "tasks") can refresh instantly
+                     instead of only on its next mount.
   types/             task.ts, diaryEntry.ts, photo.ts.
   App.tsx            Header + routed page + BottomNav. No business logic.
 ```
