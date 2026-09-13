@@ -6,7 +6,7 @@
 // and the diary functions are deliberately independent — they share no domain
 // logic and no domain function, so the two features can evolve separately:
 //
-//   tasks        -> Checklist page   saveTask / getTasksByDate / deleteTask
+//   tasks        -> Checklist page   saveTask / getTasksByDate / deleteTask / getAllTasks (search)
 //                -> Reminders page   getOpenTasksByMonth (read-only)
 //   diaryEntries -> Diary page       saveDiaryEntry / getDiaryEntriesByDate / deleteDiaryEntry
 //   photos       -> attachments      savePhoto / getPhoto / deletePhoto  (not yet wired to a page)
@@ -89,6 +89,13 @@ export async function getTasksByDate(date: string): Promise<Task[]> {
     req.onsuccess = () => resolve(req.result as Task[]);
     req.onerror = () => reject(req.error);
   });
+}
+
+/** Every task, any date, any status. Used for full-text search on the
+ *  Checklist page — filtering/scoping happens in the caller. */
+export async function getAllTasks(): Promise<Task[]> {
+  const db = await openDB();
+  return tx(db, TASKS_STORE, 'readonly', (s) => s.getAll());
 }
 
 /**

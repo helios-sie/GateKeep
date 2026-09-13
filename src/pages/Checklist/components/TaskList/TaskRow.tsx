@@ -7,6 +7,8 @@ import './TaskRow.css';
 interface TaskRowProps {
   task: Task;
   onToggleStatus: (id: string, status: TaskStatus) => void;
+  /** Called once the swipe-to-delete animation finishes. Swiping is the only
+   *  way to delete a task — there is no button for it. */
   onDelete: (id: string) => void;
 }
 
@@ -58,10 +60,6 @@ export function TaskRow({ task, onToggleStatus, onDelete }: TaskRowProps) {
           />
           <span className="task-text">{task.text}</span>
         </label>
-
-        <button className="task-delete" onClick={() => onDelete(task.id)} aria-label="Delete task">
-          ✕
-        </button>
       </div>
 
       {particles.length > 0 && (

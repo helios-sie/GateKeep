@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { deleteTask, getTasksByDate, saveTask } from '../lib/db';
-import type { StatusFilter, Task, TaskStatus } from '../types/task';
+import type { Task, TaskStatus } from '../types/task';
 
 // Bridges the "tasks" store (src/lib/db.ts) to React state for the Checklist
 // page. Knows nothing about diary entries.
 export function useTasks(date: string) {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [filter, setFilter] = useState<StatusFilter>('all');
   const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
@@ -54,7 +53,5 @@ export function useTasks(date: string) {
     [reload]
   );
 
-  const visibleTasks = tasks.filter((t) => filter === 'all' || t.status === filter);
-
-  return { tasks: visibleTasks, filter, setFilter, loading, addTask, updateStatus, removeTask };
+  return { tasks, loading, addTask, updateStatus, removeTask };
 }

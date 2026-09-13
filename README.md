@@ -14,8 +14,10 @@ src/
     PhotoCapture/     Camera capture + photo strip. Not wired to a page yet.
   pages/            One folder per routed view; each owns its own components.
     Checklist/        Tasks (id, date, text, status, createdAt) -> "tasks" store.
-      components/      Editor, FilterBar, TaskList, TaskRow (swipe-to-delete +
-                       useSwipeToDelete, its "disintegrate" animation).
+      components/      Editor, TaskSearch (search bar + month/year/all-time
+                       scope + results), TaskList/TaskRow (swipe left or
+                       right to delete — the only way; disintegrate-into-
+                       particles animation via useSwipeToDelete).
     Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
       components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor.
     Reminders/        All open tasks, one calendar month at a time, grouped by
@@ -27,6 +29,8 @@ src/
                      each with an optional deep-link param, e.g.
                      #/checklist/2026-09-05. Also exports navigateTo().
     useTasks          Bridges the "tasks" store to React state (Checklist).
+    useTaskSearch     Full-text search over "tasks", scoped to a month/year/
+                     all time (Checklist's TaskSearch).
     useOpenTasksByMonth  Open tasks for a month, grouped by date (Reminders).
     useDiaryEntry     Loads/saves the single diary entry for a date.
     useVoiceInput     Wraps the browser's SpeechRecognition API.
