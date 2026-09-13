@@ -16,10 +16,15 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
-.image-lightbox-close {
+.image-lightbox-actions {
   position: absolute;
   top: var(--sp-4);
   right: var(--sp-4);
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.image-lightbox-btn {
   width: 36px;
   height: 36px;
   display: inline-flex;
@@ -30,9 +35,10 @@
   background: rgba(0, 0, 0, 0.4);
   color: #fff;
   font-size: 1rem;
+  text-decoration: none;
   cursor: pointer;
 }
 
-.image-lightbox-close:hover {
+.image-lightbox-btn:hover {
   background: rgba(0, 0, 0, 0.6);
 }

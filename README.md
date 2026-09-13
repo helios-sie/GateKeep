@@ -19,7 +19,10 @@ src/
                      Same storage-agnostic, caller-supplies-the-icon split.
     MediaViewer/      ImageLightbox + AudioPlayer — in-app modal viewers for
                      attached media (never a new tab / OS default player).
-                     Used by Checklist's tasks now; reusable for Diary later.
+                     Both have a Download button (a real <a download> on the
+                     blob: URL); AudioPlayer also has a 0.25x-2x speed
+                     selector. Used by Checklist's tasks now; reusable for
+                     Diary later.
     TodayButton.tsx   "Today" quick-jump; hides itself when already on today.
                      Used by Calendar via its optional onToday prop.
     SearchResultsList.tsx  "<snippet> — <date>" rows shared by Checklist's
