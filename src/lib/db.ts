@@ -2,29 +2,36 @@
 // Nothing outside this file should call indexedDB directly — components and
 // hooks only ever talk to the functions exported here.
 //
-// Three unrelated concepts, three unrelated object stores. The task functions
-// and the diary functions are deliberately independent — they share no domain
-// logic and no domain function, so the two features can evolve separately:
+// Unrelated concepts, unrelated object stores. Task functions, diary
+// functions, and task-media functions are deliberately independent — they
+// share no domain logic and no domain function, so each feature can evolve
+// separately:
 //
 //   tasks        -> Checklist page   saveTask / getTasksByDate / deleteTask / getAllTasks (search)
 //                -> Reminders page   getOpenTasksByMonth (read-only)
+//   taskPhotos   -> Checklist page   saveTaskPhoto / getTaskPhoto / deleteTaskPhoto
+//   taskAudio    -> Checklist page   saveTaskAudio / getTaskAudio / deleteTaskAudio
 //   diaryEntries -> Diary page       saveDiaryEntry / getDiaryEntriesByDate / deleteDiaryEntry / getAllDiaryEntries (search)
-//   photos       -> attachments      savePhoto / getPhoto / deletePhoto  (not yet wired to a page)
+//
+// taskPhotos/taskAudio are scoped to tasks only — a task's photoIds/audioIds
+// point into them. A future Diary media feature gets its own store(s); it
+// must never read or write these.
 //
 // `openDB` and `tx` below are storage plumbing only (connection + transaction
 // wrappers); they carry no knowledge of tasks or diary entries.
 
 import { notifyTasksChanged } from './taskEvents';
 import type { DiaryEntry } from '../types/diaryEntry';
-import type { PhotoAttachment } from '../types/photo';
 import type { Task } from '../types/task';
+import type { TaskAudio, TaskPhoto } from '../types/taskMedia';
 
 const DB_NAME = 'gatekeep-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const TASKS_STORE = 'tasks';
+const TASK_PHOTOS_STORE = 'taskPhotos';
+const TASK_AUDIO_STORE = 'taskAudio';
 const DIARY_STORE = 'diaryEntries';
-const PHOTOS_STORE = 'photos';
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -38,13 +45,22 @@ function openDB(): Promise<IDBDatabase> {
         store.createIndex('by_date', 'date', { unique: false });
       }
 
+      if (!db.objectStoreNames.contains(TASK_PHOTOS_STORE)) {
+        db.createObjectStore(TASK_PHOTOS_STORE, { keyPath: 'id' });
+      }
+
+      if (!db.objectStoreNames.contains(TASK_AUDIO_STORE)) {
+        db.createObjectStore(TASK_AUDIO_STORE, { keyPath: 'id' });
+      }
+
       if (!db.objectStoreNames.contains(DIARY_STORE)) {
         const store = db.createObjectStore(DIARY_STORE, { keyPath: 'id' });
         store.createIndex('by_date', 'date', { unique: false });
       }
 
-      if (!db.objectStoreNames.contains(PHOTOS_STORE)) {
-        db.createObjectStore(PHOTOS_STORE, { keyPath: 'id' });
+      // v1 had a generic, unused "photos" store — superseded by taskPhotos.
+      if (db.objectStoreNames.contains('photos')) {
+        db.deleteObjectStore('photos');
       }
     };
 
@@ -118,6 +134,40 @@ export async function getOpenTasksByMonth(year: number, month: number): Promise<
   });
 }
 
+// --- Task photos (attached to a task; not shared with diary media) --------
+
+export async function saveTaskPhoto(photo: TaskPhoto): Promise<void> {
+  const db = await openDB();
+  await tx(db, TASK_PHOTOS_STORE, 'readwrite', (s) => s.put(photo));
+}
+
+export async function getTaskPhoto(id: string): Promise<TaskPhoto | undefined> {
+  const db = await openDB();
+  return tx(db, TASK_PHOTOS_STORE, 'readonly', (s) => s.get(id));
+}
+
+export async function deleteTaskPhoto(id: string): Promise<void> {
+  const db = await openDB();
+  await tx(db, TASK_PHOTOS_STORE, 'readwrite', (s) => s.delete(id));
+}
+
+// --- Task audio (attached to a task; not shared with diary media) ---------
+
+export async function saveTaskAudio(audio: TaskAudio): Promise<void> {
+  const db = await openDB();
+  await tx(db, TASK_AUDIO_STORE, 'readwrite', (s) => s.put(audio));
+}
+
+export async function getTaskAudio(id: string): Promise<TaskAudio | undefined> {
+  const db = await openDB();
+  return tx(db, TASK_AUDIO_STORE, 'readonly', (s) => s.get(id));
+}
+
+export async function deleteTaskAudio(id: string): Promise<void> {
+  const db = await openDB();
+  await tx(db, TASK_AUDIO_STORE, 'readwrite', (s) => s.delete(id));
+}
+
 // --- Diary entries (Diary page) -------------------------------------------------
 
 export async function saveDiaryEntry(entry: DiaryEntry): Promise<void> {
@@ -144,21 +194,4 @@ export async function getDiaryEntriesByDate(date: string): Promise<DiaryEntry[]>
 export async function getAllDiaryEntries(): Promise<DiaryEntry[]> {
   const db = await openDB();
   return tx(db, DIARY_STORE, 'readonly', (s) => s.getAll());
-}
-
-// --- Photos (attachments; not yet wired into either page) ------------------
-
-export async function savePhoto(photo: PhotoAttachment): Promise<void> {
-  const db = await openDB();
-  await tx(db, PHOTOS_STORE, 'readwrite', (s) => s.put(photo));
-}
-
-export async function getPhoto(id: string): Promise<PhotoAttachment | undefined> {
-  const db = await openDB();
-  return tx(db, PHOTOS_STORE, 'readonly', (s) => s.get(id));
-}
-
-export async function deletePhoto(id: string): Promise<void> {
-  const db = await openDB();
-  await tx(db, PHOTOS_STORE, 'readwrite', (s) => s.delete(id));
 }

@@ -13,12 +13,12 @@
   will-change: transform;
 }
 
-/* Mirrors the old flex-row layout .task-item used to apply directly, now
- * one level in so the particle overlay can sit alongside it at the row's
- * full padded bounds. */
+/* One level in so the particle overlay can sit alongside it at the row's
+ * full padded bounds. Column layout: the checkbox/text row (still a row
+ * itself, via ".task-item label" in TaskList.css), then attachments below. */
 .task-row-content {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   gap: var(--sp-2);
   width: 100%;
 }

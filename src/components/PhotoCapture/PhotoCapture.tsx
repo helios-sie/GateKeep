@@ -1,9 +1,10 @@
 import { useRef } from 'react';
-import { savePhoto } from '../../lib/db';
-import { generateId } from '../../lib/id';
 
 interface PhotoCaptureProps {
-  onCapture: (photoId: string) => void;
+  /** Handed the raw captured/picked file — the caller decides where and how
+   *  to persist it (e.g. saveTaskPhoto for Checklist, a future diary-media
+   *  store for Diary). This component only knows how to get a photo file. */
+  onCapture: (file: File) => void;
 }
 
 // Uses a plain file input with capture="environment": on mobile browsers
@@ -13,13 +14,9 @@ interface PhotoCaptureProps {
 export function PhotoCapture({ onCapture }: PhotoCaptureProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    const id = generateId();
-    await savePhoto({ id, blob: file, createdAt: Date.now() });
-    onCapture(id);
+    if (file) onCapture(file);
     e.target.value = '';
   }
 

@@ -11,4 +11,8 @@ export interface Task {
   text: string;
   status: TaskStatus;
   createdAt: number;
+  /** Ids into the "taskPhotos" store (src/lib/db.ts). */
+  photoIds: string[];
+  /** Ids into the "taskAudio" store (src/lib/db.ts). */
+  audioIds: string[];
 }

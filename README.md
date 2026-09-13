@@ -11,17 +11,28 @@ src/
   components/        Shared UI, used by more than one page.
     BottomNav/        The three-tab bar.
     Calendar/         Day navigator (Checklist + Diary).
-    PhotoCapture/     Camera capture + photo strip. Not wired to a page yet.
+    PhotoCapture/     Photo file input (camera on mobile, file picker on
+                     desktop). Storage-agnostic — hands the caller a File.
+    AudioCapture/     Records via MediaRecorder, or picks an audio file as a
+                     fallback. Same storage-agnostic split as PhotoCapture.
+    MediaViewer/      ImageLightbox + AudioPlayer — in-app modal viewers for
+                     attached media (never a new tab / OS default player).
+                     Used by Checklist's tasks now; reusable for Diary later.
     TodayButton.tsx   "Today" quick-jump; hides itself when already on today.
                      Used by Calendar via its optional onToday prop.
     SearchResultsList.tsx  "<snippet> — <date>" rows shared by Checklist's
                      and Diary's search (both just supply a data source).
   pages/            One folder per routed view; each owns its own components.
-    Checklist/        Tasks (id, date, text, status, createdAt) -> "tasks" store.
-      components/      Editor, TaskSearch (search bar + month/year/all-time
-                       scope + results), TaskList/TaskRow (swipe left or
-                       right to delete — the only way; disintegrate-into-
-                       particles animation via useSwipeToDelete).
+    Checklist/        Tasks (id, date, text, status, createdAt, photoIds,
+                     audioIds) -> "tasks" store.
+      components/      Editor (attach photo/audio when composing, via
+                       PhotoCapture/AudioCapture -> saveTaskPhoto/
+                       saveTaskAudio), TaskSearch (search bar + month/year/
+                       all-time scope + results), TaskList/TaskRow (swipe
+                       left or right to delete — the only way;
+                       disintegrate-into-particles animation via
+                       useSwipeToDelete; TaskAttachments renders thumbnails/
+                       chips that open ImageLightbox/AudioPlayer).
     Diary/            One entry per date (id=date, text, createdAt) -> "diaryEntries".
       components/      DiaryEntryView (read-only + pencil) / DiaryEntryEditor /
                        DiarySearch (icon that reveals a search bar; collapsed
@@ -42,8 +53,10 @@ src/
     useDiaryEntry     Loads/saves the single diary entry for a date.
     useVoiceInput     Wraps the browser's SpeechRecognition API.
   lib/
-    db.ts            The only file that touches IndexedDB. Three separate stores
-                     (tasks, diaryEntries, photos) with non-overlapping functions.
+    db.ts            The only file that touches IndexedDB. Separate stores
+                     (tasks, taskPhotos, taskAudio, diaryEntries) with
+                     non-overlapping functions — taskPhotos/taskAudio are
+                     scoped to tasks only, never shared with diary media.
     dateUtils.ts     Small date-formatting helpers.
     userProfile.ts   Placeholder user name; swap here when a profile UI exists.
     taskEvents.ts    Pub-sub fired by db.ts on every task write, so Reminders

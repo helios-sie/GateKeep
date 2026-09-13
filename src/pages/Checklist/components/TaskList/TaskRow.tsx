@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { Task, TaskStatus } from '../../../../types/task';
+import { TaskAttachments } from './TaskAttachments';
 import type { Particle } from './useSwipeToDelete';
 import { useSwipeToDelete } from './useSwipeToDelete';
 import './TaskRow.css';
@@ -60,6 +61,8 @@ export function TaskRow({ task, onToggleStatus, onDelete }: TaskRowProps) {
           />
           <span className="task-text">{task.text}</span>
         </label>
+
+        <TaskAttachments photoIds={task.photoIds ?? []} audioIds={task.audioIds ?? []} />
       </div>
 
       {particles.length > 0 && (

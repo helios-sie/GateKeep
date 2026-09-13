@@ -67,3 +67,11 @@
   border-color: var(--danger);
   color: var(--accent-contrast);
 }
+
+.editor-attachment-count {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
