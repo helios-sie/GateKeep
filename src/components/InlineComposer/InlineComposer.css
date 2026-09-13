@@ -19,7 +19,9 @@
   padding: var(--sp-3);
   /* room for the docked icons so typed text never runs under them */
   padding-right: 64px;
-  font-family: inherit;
+  /* Writing a task or a diary entry uses the same "old-world writer" serif
+   * as the saved result below — not the sans used for surrounding UI. */
+  font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.5;
   transition: border-color var(--ease);

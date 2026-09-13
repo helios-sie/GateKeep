@@ -1,13 +1,19 @@
 :root {
   color-scheme: light;
 
+  /* UI chrome only — buttons, labels, nav, placeholders. */
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino,
-    Georgia, 'Times New Roman', serif;
+  /* The "old-world writer" voice — title, and the user's own written words
+   * (task text, diary entries). Book-style serifs only (no script/cursive),
+   * so it stays legible at small sizes; system-available, no font download. */
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', 'Bookman Old Style',
+    Palatino, Georgia, 'Times New Roman', serif;
 
   font-family: var(--font-sans);
 
-  /* palette — warm parchment / library ledger */
+  /* palette — warm parchment / library ledger. Exactly two families:
+   * parchment/cream neutrals (--bg..--text-faint) and maple/oxblood accent
+   * (--accent..--danger). No other hue anywhere in the app. */
   --bg: #f0e9d8;
   --surface: #faf5e9;
   --surface-raised: #f3ecda;
@@ -19,7 +25,6 @@
   --accent: #7c3a2c;        /* maple / oxblood */
   --accent-hover: #682f23;
   --accent-contrast: #f7f1e3;
-  --gold: #9c7b33;
   --danger: #86382b;
 
   --sp-1: 4px;
@@ -46,6 +51,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Kill the OS-default blue tap flash on mobile (e.g. Android Chrome) —
+ * :active/:focus-visible below already give every interactive element its
+ * own themed feedback, so the native highlight is just a stray blue flash. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
 button {
   font-family: inherit;
   transition: background-color var(--ease), border-color var(--ease), color var(--ease);
@@ -53,6 +70,7 @@ button {
 
 button:focus-visible,
 input:focus-visible,
+select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;

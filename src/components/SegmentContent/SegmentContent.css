@@ -1,4 +1,7 @@
+/* The user's own written words (a task, a diary entry) — the "old-world
+ * writer" serif, not the sans used for surrounding UI chrome. */
 .segment-content {
+  font-family: var(--font-serif);
   line-height: 1.6;
 }
 
