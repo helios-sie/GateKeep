@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { savePhoto } from '../../lib/db';
+import { generateId } from '../../lib/id';
 
 interface PhotoCaptureProps {
   onCapture: (photoId: string) => void;
@@ -16,7 +17,7 @@ export function PhotoCapture({ onCapture }: PhotoCaptureProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const id = crypto.randomUUID();
+    const id = generateId();
     await savePhoto({ id, blob: file, createdAt: Date.now() });
     onCapture(id);
     e.target.value = '';

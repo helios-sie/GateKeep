@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { deleteTask, getTasksByDate, saveTask } from '../lib/db';
+import { generateId } from '../lib/id';
 import type { Task, TaskStatus } from '../types/task';
 
 // Bridges the "tasks" store (src/lib/db.ts) to React state for the Checklist
@@ -23,7 +24,7 @@ export function useTasks(date: string) {
   const addTask = useCallback(
     async (text: string) => {
       const task: Task = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         date,
         text,
         status: 'open',
