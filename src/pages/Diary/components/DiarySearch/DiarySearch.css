@@ -25,14 +25,21 @@
   border-color: var(--accent);
 }
 
+/*
+ * The gap above the bar is a margin on the bar rather than padding on the
+ * panel. Under `box-sizing: border-box` a padded box cannot shrink below its
+ * own padding, so padding here would stop the collapse at 12px instead of 0
+ * and leave a step when the panel unmounts. A margin belongs to the clipped
+ * content, so it collapses away with everything else.
+ */
 .diary-search-panel {
   width: 100%;
-  padding-top: var(--sp-3);
 }
 
 .diary-search-bar {
   display: flex;
   gap: var(--sp-2);
+  margin-top: var(--sp-3);
 }
 
 .diary-search-input {
@@ -72,4 +79,58 @@
 .diary-search-panel .search-results-list,
 .diary-search-panel .search-results-status {
   margin-top: var(--sp-3);
+}
+
+/*
+ * Expand/collapse. The height is carried by grid-template-rows 0fr -> 1fr
+ * (the child needs min-height:0 and overflow:hidden for it to clip), which
+ * animates to the panel's real height without anyone having to measure it or
+ * guess a max-height — so the content below slides rather than jumping.
+ *
+ * Collapsing runs the same keyframes in `reverse` instead of a second set, so
+ * the two directions can never drift apart; DiarySearch.tsx keeps the panel
+ * mounted for COLLAPSE_MS while that plays.
+ */
+.diary-search-reveal {
+  display: grid;
+  grid-template-rows: 1fr;
+  width: 100%;
+  animation: gk-search-reveal var(--motion-slow) var(--ease-out);
+}
+
+.diary-search-reveal > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.diary-search-reveal.is-closing {
+  animation: gk-search-reveal var(--motion-base) var(--ease-out) reverse forwards;
+}
+
+@keyframes gk-search-reveal {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+/* The icon swaps between magnifier and close; rotating it a little on the way
+ * in stops that from reading as a hard glyph substitution. */
+.diary-search-toggle svg {
+  animation: gk-search-icon-in var(--motion-fast) var(--ease-out);
+}
+
+@keyframes gk-search-icon-in {
+  from {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

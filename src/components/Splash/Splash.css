@@ -1,0 +1,104 @@
+/*
+ * Timeline (ms from mount):
+ *      0 -  620  quill fades and scales up
+ *    380 -  800  wordmark fades in and rises beneath it
+ *    800 - 1460  the finished lockup holds
+ *   1460 - 1920  the splash fades out
+ *
+ * The app shell underneath starts its own fade at 1400 (see .app-shell in
+ * index.css), so the two overlap by the whole length of this fade — the app is
+ * already rising as the splash falls, rather than being revealed after it. The
+ * unmount is driven by this animation's `animationend`, not a timer; FULL_MS
+ * in splashMode.ts is only the reduced-motion fallback.
+ */
+
+.splash {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  background-image: var(--paper-texture-page);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+  background-size: auto, auto, 100% 100%, 100% 100%, 100% 100%, 220px 220px;
+}
+
+.splash-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.splash-quill {
+  width: auto;
+  height: 132px;
+}
+
+.splash-wordmark {
+  font-family: var(--font-script);
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+
+/*
+ * Static mode — prefers-reduced-motion, and every open after the first each
+ * day. Nothing animates: the lockup is simply on screen from the first frame.
+ * The reduced-motion case is routed here rather than left to play a sequence,
+ * because index.css disables every animation globally for those users, which
+ * would otherwise strand the entrance on its opening frame (an invisible
+ * quill) for the whole duration.
+ */
+.splash--static {
+  animation: splash-out 260ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 380ms forwards;
+}
+
+/* easeOutQuad — leaves immediately and decelerates into nothing, so the last
+ * of the splash thins out instead of stopping dead. */
+.splash--full {
+  animation: splash-out 460ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 1460ms forwards;
+}
+
+.splash--full .splash-quill {
+  animation: splash-quill-in 620ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.splash--full .splash-wordmark {
+  animation: splash-word-in 420ms cubic-bezier(0.22, 0.7, 0.3, 1) 380ms both;
+}
+
+@keyframes splash-quill-in {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes splash-word-in {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Opacity only. `visibility` used to be animated here too, but it flips
+ * discretely rather than interpolating, and the element is unmounted on this
+ * animation's own animationend anyway — so it added a hard step to the one
+ * transition that most needed to stay continuous. */
+@keyframes splash-out {
+  to {
+    opacity: 0;
+  }
+}

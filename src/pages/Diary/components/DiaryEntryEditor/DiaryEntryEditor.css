@@ -68,3 +68,10 @@
   color: var(--text);
   border-color: var(--accent);
 }
+
+/* Mirrors DiaryEntryView's entrance so view->edit and edit->view feel like
+ * the same movement in both directions. The composer is focusable and
+ * typeable from the first frame — the animation never gates input. */
+.diary-entry-editor {
+  animation: gk-diary-mode-in var(--motion-base) var(--ease-out);
+}

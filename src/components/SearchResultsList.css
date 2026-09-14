@@ -37,3 +37,26 @@
   color: var(--text-faint);
   font-size: 0.85rem;
 }
+
+/* A far gentler press than the global button scale: these rows are full
+ * width, and 0.96 on something this large reads as the whole list lurching. */
+.search-result:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+/* Results arrive asynchronously as the query settles, so they fade in rather
+ * than appearing mid-typing. */
+.search-result {
+  animation: gk-result-in var(--motion-fast) var(--ease-out);
+}
+
+@keyframes gk-result-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

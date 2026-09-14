@@ -98,7 +98,15 @@ export function Diary({ initialDate }: DiaryProps) {
               onCancel={entry ? () => setEditing(false) : undefined}
             />
           ) : (
-            <DiaryEntryView content={getContent(entry)} onEdit={() => setEditing(true)} />
+            // Keyed for the same reason the editor above is: without it React
+            // reuses the instance across a date change, so nothing remounts
+            // and the entrance never replays. The view/edit switch already
+            // swaps component type, so that case remounts on its own.
+            <DiaryEntryView
+              key={date}
+              content={getContent(entry)}
+              onEdit={() => setEditing(true)}
+            />
           ))}
       </div>
     </section>

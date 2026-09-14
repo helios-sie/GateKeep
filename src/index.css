@@ -80,6 +80,23 @@
   --radius-sm: 5px;
   --radius-pill: 999px;
   --ease: 140ms ease;
+
+  /*
+   * Motion scale. Everything in the app sits in the 150-260ms band — long
+   * enough to read as movement, short enough that it is over before it can
+   * get in the way of a second tap. --ease-out (easeOutQuad) is the default
+   * curve: things arrive quickly and settle, which is what makes a short
+   * transition feel finished rather than clipped.
+   *
+   * Nothing here ever gates interaction. Every use below is either a CSS
+   * animation on content that is already mounted and hit-testable, or a
+   * transition on a purely visual property — no handler waits on a timer
+   * before responding.
+   */
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 260ms;
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 * {
@@ -107,7 +124,23 @@ body {
 
 button {
   font-family: inherit;
-  transition: background-color var(--ease), border-color var(--ease), color var(--ease);
+  transition: background-color var(--ease), border-color var(--ease), color var(--ease),
+    transform var(--motion-fast) var(--ease-out);
+}
+
+/*
+ * Press feedback. A transform rather than a colour change, because it reads
+ * the same on every surface the app has (filled, outlined, bare icon) without
+ * needing a per-variant pressed colour.
+ *
+ * Safe as a blanket rule only because no button in the app carries a
+ * transform of its own — the one row that does animate its transform
+ * (.task-item, swipe-to-delete) is an <li>, not a button, and is handled
+ * separately in TaskRow.css. :disabled is excluded so dead controls don't
+ * appear to respond.
+ */
+button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 button:focus-visible,
@@ -125,6 +158,12 @@ textarea:focus-visible {
   height: 100dvh;
   display: flex;
   flex-direction: column;
+  /* The containing block for ProfileMenu's slide-in panel, which is absolute
+   * rather than fixed so that on a wide window it comes in against this
+   * column's own edge instead of the far side of the screen. `hidden` keeps
+   * the panel's off-screen starting position from widening the page. */
+  position: relative;
+  overflow: hidden;
   background-color: var(--bg);
   background-image: var(--paper-texture-page);
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
@@ -149,6 +188,74 @@ textarea:focus-visible {
   color: var(--accent);
 }
 
+/* Wraps everything that isn't the splash, so the app can be animated in
+ * underneath the splash without dragging the splash along with it. */
+.app-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * The app's half of the crossfade. It starts at 1400ms — 60ms *before* the
+ * splash begins to fade — so the two genuinely overlap instead of running
+ * back to back; at the midpoint both are part-transparent over the same
+ * parchment, which is what dissolves one into the other rather than cutting.
+ *
+ * Opacity and transform are split into two animations purely so each can
+ * carry its own curve: the fade uses easeOutQuad to match the splash's exit,
+ * while the scale uses easeOutExpo so the content decelerates into place a
+ * beat later instead of arriving with the fade and stopping flat.
+ *
+ * `forwards`, never `both`. A backwards fill would hold the shell at opacity
+ * 0 for the whole delay, which means that in any situation where the
+ * animation does not actually advance — a backgrounded tab, where timers
+ * still run but animation frames do not — the splash's fallback timer would
+ * dismiss the splash and reveal a permanently blank app. With `forwards` the
+ * un-run state is the shell's natural, visible one, so the worst case is a
+ * missing animation rather than a missing app. The snap to opacity 0 when the
+ * animation does start is invisible: the splash is still fully opaque for
+ * another 60ms at that point.
+ */
+.app-shell--entering {
+  animation: shell-fade-in 560ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 1400ms forwards,
+    shell-settle 620ms cubic-bezier(0.16, 1, 0.3, 1) 1400ms forwards;
+}
+
+/* Same crossfade against the static splash's much shorter exit (380-640ms). */
+.app-shell--entering-quick {
+  animation: shell-fade-in 360ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 340ms forwards,
+    shell-settle 420ms cubic-bezier(0.16, 1, 0.3, 1) 340ms forwards;
+}
+
+@keyframes shell-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shell-settle {
+  from {
+    transform: scale(0.985);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Height is tied to the wordmark's font-size so the two always scale
+ * together; width stays auto so the trimmed artwork keeps its own aspect. */
+.app-header-quill {
+  flex: none;
+  height: 1.9rem;
+  width: auto;
+  margin-left: var(--sp-2);
+}
+
 .app-main {
   flex: 1;
   min-height: 0;
@@ -169,11 +276,58 @@ textarea:focus-visible {
   flex-direction: column;
 }
 
+/*
+ * Switching bottom-nav tabs swaps one page component for another, so each
+ * page animates simply by mounting — no route-transition machinery, and
+ * nothing is held back waiting for an outgoing page to finish leaving.
+ *
+ * Deliberately no `animation-fill-mode`: with none, an animation that never
+ * runs (prefers-reduced-motion, a backgrounded tab) leaves the element at its
+ * natural, fully visible state. A `both` fill would pin it at opacity 0
+ * instead, which is how an entrance animation turns into a blank screen.
+ */
 .page {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  animation: gk-page-in var(--motion-base) var(--ease-out);
+}
+
+@keyframes gk-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Wraps the part of a page that belongs to the selected date. Keyed on the
+ * date by its page, so changing day remounts it and replays the entrance —
+ * which is what turns the swap into a transition. Laid out to be invisible to
+ * flex: it passes its parent's sizing straight through to its child.
+ */
+.date-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  animation: gk-pane-in var(--motion-base) var(--ease-out);
+}
+
+@keyframes gk-pane-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* The swipeable part of a page — everything below its DateNav/MonthSwitcher

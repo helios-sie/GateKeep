@@ -66,13 +66,19 @@ export function Checklist({ initialDate }: ChecklistProps) {
       >
         <Editor onSubmit={addTask} />
         <TaskSearch onActiveChange={setSearching} />
+        {/* Keyed on the date so a day change remounts the list and replays
+            .date-pane's entrance, instead of the rows swapping in place. The
+            composer and search above stay mounted — they aren't part of the
+            day being viewed, and re-animating them would just be noise. */}
         {!searching && (
+          <div className="date-pane" key={date}>
           <TaskList
             tasks={tasks}
             loading={loading}
             onToggleStatus={updateStatus}
             onDelete={removeTask}
           />
+          </div>
         )}
       </div>
     </section>

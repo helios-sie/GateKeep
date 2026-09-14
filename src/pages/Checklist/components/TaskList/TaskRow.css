@@ -58,3 +58,21 @@
     opacity: 0;
   }
 }
+
+/*
+ * Press feedback for the row. A task row is an <li>, so the global
+ * `button:active` rule in index.css does not reach it — and it could not
+ * safely be applied here anyway: the row's own transform is driven by the
+ * swipe gesture, so this scales the inner content instead of the row itself
+ * and leaves that transform untouched.
+ *
+ * Suppressed once a drag or the delete animation has started, so a press that
+ * turns into a swipe doesn't leave the content shrunk mid-gesture.
+ */
+.task-row-content {
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+.task-item:active:not(.task-item-dragging):not(.task-item-disintegrating) .task-row-content {
+  transform: scale(0.985);
+}
