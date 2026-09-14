@@ -72,7 +72,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  /* Room for the selected stamp's circle (below) to clear the letter row
+   * above it — was 2px, which the circle's upward reach ate straight
+   * through, partially covering the weekday letter on the selected day. */
+  gap: 7px;
   padding: var(--sp-2) 4px;
   background: none;
   border: none;
@@ -136,7 +139,10 @@
 .week-strip-day.is-selected .week-strip-day-number::before {
   content: '';
   position: absolute;
-  inset: -8px -10px;
+  /* Vertical reach trimmed (was -8px) to clear the now-larger gap above
+   * instead of reaching up into the weekday letter; horizontal reach kept
+   * generous so two-digit numbers still get a comfortably round stamp. */
+  inset: -5px -10px;
   z-index: -1;
   /* Darker than the plain --accent used elsewhere (today's tint, hover
    * states) specifically so the VIEWED date's stamp reads clearly against
