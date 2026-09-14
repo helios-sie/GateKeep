@@ -1,7 +1,13 @@
 import { useState } from 'react';
+import { WeekStrip } from '../../components/WeekStrip/WeekStrip';
+import { navigateTo } from '../../hooks/useHashRoute';
 import { useOpenTasksByMonth } from '../../hooks/useOpenTasksByMonth';
 import { useSwipeNavigate } from '../../hooks/useSwipeNavigate';
-import { shiftMonth } from '../../lib/dateUtils';
+import { useWeekContentDates } from '../../hooks/useWeekContentDates';
+import { getTasksInRange } from '../../lib/db';
+import { onTasksChanged } from '../../lib/taskEvents';
+import { shiftMonth, todayISO } from '../../lib/dateUtils';
+import { getWeekDates } from '../../lib/weekUtils';
 import { DateGroup } from './components/DateGroup/DateGroup';
 import { MonthSwitcher } from './components/MonthSwitcher/MonthSwitcher';
 import './Reminders.css';
@@ -16,6 +22,20 @@ export function Reminders() {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const { groups, loading } = useOpenTasksByMonth(year, month);
+
+  // A quick-access week-strip, always anchored on the current week
+  // (independent of whatever month is being browsed below) — Reminders has
+  // no "selected day" of its own, so tapping a day here deep-links straight
+  // into Checklist for that date, same as tapping a task already does. The
+  // MonthSwitcher's own month/year browsing is untouched.
+  const thisWeek = getWeekDates(todayISO());
+  const weekContentDates = useWeekContentDates(
+    thisWeek[0],
+    thisWeek[6],
+    getTasksInRange,
+    onTasksChanged,
+    (task) => task.status === 'open'
+  );
 
   // Swipe left/right anywhere on the list to step a month forward/back —
   // the MonthSwitcher arrows above do the same thing and stay as a
@@ -37,6 +57,13 @@ export function Reminders() {
 
   return (
     <section className="page">
+      <WeekStrip
+        selectedDate={todayISO()}
+        onSelectDate={(date) => navigateTo('checklist', date)}
+        contentDates={weekContentDates}
+        maxDate={todayISO()}
+      />
+
       <MonthSwitcher
         year={year}
         month={month}

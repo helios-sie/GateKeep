@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Calendar } from '../../components/Calendar/Calendar';
+import { getTasksInRange } from '../../lib/db';
+import { onTasksChanged } from '../../lib/taskEvents';
 import { useSwipeNavigate } from '../../hooks/useSwipeNavigate';
 import { useTasks } from '../../hooks/useTasks';
+import { useWeekContentDates } from '../../hooks/useWeekContentDates';
 import { addDays, todayISO } from '../../lib/dateUtils';
+import { getWeekDates } from '../../lib/weekUtils';
 import { Editor } from './components/Editor/Editor';
 import { TaskList } from './components/TaskList/TaskList';
 import { TaskSearch } from './components/TaskSearch';
@@ -18,6 +22,16 @@ export function Checklist({ initialDate }: ChecklistProps) {
   const [date, setDate] = useState(initialDate ?? todayISO());
   const [searching, setSearching] = useState(false);
   const { tasks, loading, addTask, updateStatus, removeTask } = useTasks(date);
+
+  // Which days in the visible week get a content dot on the week-strip —
+  // any task, any status, is enough to mark a day.
+  const weekDates = getWeekDates(date);
+  const contentDates = useWeekContentDates(
+    weekDates[0],
+    weekDates[6],
+    getTasksInRange,
+    onTasksChanged
+  );
 
   // Tapping a search result sets a new deep-link date while this page is
   // already mounted (route doesn't change, so nothing remounts it) — pick
@@ -39,7 +53,12 @@ export function Checklist({ initialDate }: ChecklistProps) {
 
   return (
     <section className="page">
-      <Calendar date={date} onChange={setDate} onToday={() => setDate(todayISO())} />
+      <Calendar
+        date={date}
+        onChange={setDate}
+        onToday={() => setDate(todayISO())}
+        contentDates={contentDates}
+      />
       <div
         className={dragging ? 'swipe-content is-dragging' : 'swipe-content'}
         style={dragging ? { transform: `translateX(${Math.max(-32, Math.min(32, dragX * 0.4))}px)` } : undefined}

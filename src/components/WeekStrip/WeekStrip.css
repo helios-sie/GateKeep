@@ -1,0 +1,145 @@
+.week-strip {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.week-strip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.week-strip-label {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+
+.week-strip-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.week-strip-calendar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  padding: var(--sp-1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.week-strip-calendar-btn:hover {
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+
+/* Invisible but still focusable/functional — showPicker()/focus() on this
+ * is what actually opens the native date picker; the visible trigger is
+ * the calendar-icon button above. */
+.week-strip-hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.week-strip-days {
+  display: flex;
+  gap: var(--sp-1);
+  overflow-x: auto;
+  /* Native scroll only, never the page-level swipe-navigate — these are
+   * <button> elements, already in useSwipeNavigate's ignore list, so this
+   * is purely a visual/scrolling concern, not a gesture-conflict one. */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.week-strip-days::-webkit-scrollbar {
+  display: none;
+}
+
+.week-strip-day {
+  flex: 1 0 auto;
+  min-width: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--sp-2) 4px;
+  background: none;
+  border: none;
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  cursor: pointer;
+  position: relative;
+}
+
+.week-strip-day:hover:not(:disabled) {
+  background: var(--surface);
+}
+
+.week-strip-day:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.week-strip-day-letter {
+  font-size: 0.65rem;
+  letter-spacing: 0.03em;
+  color: var(--text-faint);
+}
+
+.week-strip-day-number {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.week-strip-day.is-today .week-strip-day-letter,
+.week-strip-day.is-today .week-strip-day-number {
+  color: var(--accent);
+}
+
+/* The "hand-stamped" selected mark — a slightly irregular ink-ring around
+ * the number, not a flat filled circle, so it reads as a stamp rather than
+ * a UI chip. */
+.week-strip-day.is-selected .week-strip-day-number {
+  position: relative;
+  color: var(--accent-contrast);
+}
+
+.week-strip-day.is-selected .week-strip-day-number::before {
+  content: '';
+  position: absolute;
+  inset: -7px -9px;
+  z-index: -1;
+  background: var(--accent);
+  border-radius: 48% 52% 51% 49% / 53% 47% 53% 47%;
+  transform: rotate(-3deg);
+}
+
+.week-strip-day.is-selected .week-strip-day-letter {
+  color: var(--accent);
+}
+
+.week-strip-day-dot {
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.week-strip-day.is-selected .week-strip-day-dot {
+  background: var(--accent-contrast);
+}

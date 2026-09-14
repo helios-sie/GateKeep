@@ -23,6 +23,7 @@
 // wrappers); they carry no knowledge of tasks or diary entries.
 
 import { notifyTasksChanged } from './taskEvents';
+import { notifyDiaryChanged } from './diaryEvents';
 import type { DiaryAudio, DiaryPhoto } from '../types/diaryMedia';
 import type { DiaryEntry } from '../types/diaryEntry';
 import type { Task } from '../types/task';
@@ -117,11 +118,25 @@ export async function deleteTask(id: string): Promise<void> {
   notifyTasksChanged();
 }
 
+
 export async function getTasksByDate(date: string): Promise<Task[]> {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const t = db.transaction(TASKS_STORE, 'readonly');
     const req = t.objectStore(TASKS_STORE).index('by_date').getAll(date);
+    req.onsuccess = () => resolve(req.result as Task[]);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+/** Every task (any status) whose date falls within [startDate, endDate]
+ *  inclusive — both yyyy-MM-dd, so a plain lexicographic bound works. Used
+ *  by the week-strip to know which days to show a content dot on. */
+export async function getTasksInRange(startDate: string, endDate: string): Promise<Task[]> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const t = db.transaction(TASKS_STORE, 'readonly');
+    const req = t.objectStore(TASKS_STORE).index('by_date').getAll(IDBKeyRange.bound(startDate, endDate));
     req.onsuccess = () => resolve(req.result as Task[]);
     req.onerror = () => reject(req.error);
   });
@@ -193,11 +208,13 @@ export async function deleteTaskAudio(id: string): Promise<void> {
 export async function saveDiaryEntry(entry: DiaryEntry): Promise<void> {
   const db = await openDB();
   await tx(db, DIARY_STORE, 'readwrite', (s) => s.put(entry));
+  notifyDiaryChanged();
 }
 
 export async function deleteDiaryEntry(id: string): Promise<void> {
   const db = await openDB();
   await tx(db, DIARY_STORE, 'readwrite', (s) => s.delete(id));
+  notifyDiaryChanged();
 }
 
 export async function getDiaryEntriesByDate(date: string): Promise<DiaryEntry[]> {
@@ -205,6 +222,18 @@ export async function getDiaryEntriesByDate(date: string): Promise<DiaryEntry[]>
   return new Promise((resolve, reject) => {
     const t = db.transaction(DIARY_STORE, 'readonly');
     const req = t.objectStore(DIARY_STORE).index('by_date').getAll(date);
+    req.onsuccess = () => resolve(req.result as DiaryEntry[]);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+/** Every diary entry whose date falls within [startDate, endDate] inclusive
+ *  — used by the week-strip to know which days to show a content dot on. */
+export async function getDiaryEntriesInRange(startDate: string, endDate: string): Promise<DiaryEntry[]> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const t = db.transaction(DIARY_STORE, 'readonly');
+    const req = t.objectStore(DIARY_STORE).index('by_date').getAll(IDBKeyRange.bound(startDate, endDate));
     req.onsuccess = () => resolve(req.result as DiaryEntry[]);
     req.onerror = () => reject(req.error);
   });

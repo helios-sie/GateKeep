@@ -1,7 +1,5 @@
-import { DateNav } from '../DateNav/DateNav';
-import { TodayButton } from '../TodayButton';
-import { addDays, formatDisplay, todayISO } from '../../lib/dateUtils';
-import './Calendar.css';
+import { WeekStrip } from '../WeekStrip/WeekStrip';
+import { todayISO } from '../../lib/dateUtils';
 
 interface CalendarProps {
   date: string;
@@ -10,31 +8,21 @@ interface CalendarProps {
    *  already is today). Opt-in per page — pass it wherever a "jump back to
    *  today" shortcut makes sense. */
   onToday?: () => void;
+  /** Dates (yyyy-MM-dd) in the visible week that should show a content dot
+   *  — the caller knows whether that's "has a task" or "has a diary entry".
+   *  Defaults to none. */
+  contentDates?: Set<string>;
 }
 
-export function Calendar({ date, onChange, onToday }: CalendarProps) {
+// experiment: week-strip in place of the old arrows + single date display.
+export function Calendar({ date, onChange, onToday, contentDates }: CalendarProps) {
   return (
-    <DateNav
-      onPrev={() => onChange(addDays(date, -1))}
-      onNext={() => onChange(addDays(date, 1))}
-      nextDisabled={date >= todayISO()}
-      prevLabel="Previous day"
-      nextLabel="Next day"
-    >
-      <input
-        type="date"
-        value={date}
-        max={todayISO()}
-        onChange={(e) => {
-          // Ignore a clear/incomplete edit (empty value) instead of
-          // adopting it as the selected date — an empty string is not a
-          // valid yyyy-MM-dd and would poison every date computed from it.
-          if (e.target.value) onChange(e.target.value);
-        }}
-      />
-      <span className="calendar-display-label">{formatDisplay(date)}</span>
-
-      {onToday && <TodayButton date={date} onToday={onToday} />}
-    </DateNav>
+    <WeekStrip
+      selectedDate={date}
+      onSelectDate={onChange}
+      contentDates={contentDates ?? new Set()}
+      maxDate={todayISO()}
+      onToday={onToday}
+    />
   );
 }

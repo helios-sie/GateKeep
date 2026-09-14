@@ -71,6 +71,15 @@ export function ChevronRightIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function CalendarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <rect x="3.5" y="5" width="17" height="16" rx="2" />
+      <path d="M8 3v4M16 3v4M3.5 10h17" />
+    </svg>
+  );
+}
+
 /** Raw markup equivalents of CameraIcon/MicIcon, for the one spot (Inline
  *  Composer's vanilla-DOM media nodes) that builds elements outside React. */
 export const CAMERA_ICON_SVG =

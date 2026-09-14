@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Calendar } from '../../components/Calendar/Calendar';
+import { onDiaryChanged } from '../../lib/diaryEvents';
+import { getDiaryEntriesInRange } from '../../lib/db';
 import { useDiaryEntry } from '../../hooks/useDiaryEntry';
 import { useSwipeNavigate } from '../../hooks/useSwipeNavigate';
+import { useWeekContentDates } from '../../hooks/useWeekContentDates';
 import { getContent } from '../../lib/content';
 import { addDays, todayISO } from '../../lib/dateUtils';
+import { getWeekDates } from '../../lib/weekUtils';
 import type { ContentSegment } from '../../types/content';
 import { DiaryEntryEditor } from './components/DiaryEntryEditor/DiaryEntryEditor';
 import { DiaryEntryView } from './components/DiaryEntryView/DiaryEntryView';
@@ -44,6 +48,15 @@ export function Diary({ initialDate }: DiaryProps) {
 
   const showEditor = !entry || editing;
 
+  // Which days in the visible week get a content dot on the week-strip.
+  const weekDates = getWeekDates(date);
+  const contentDates = useWeekContentDates(
+    weekDates[0],
+    weekDates[6],
+    getDiaryEntriesInRange,
+    onDiaryChanged
+  );
+
   // Swipe left/right anywhere on the entry to move a day forward/back — the
   // Calendar arrows above do the same thing and stay as a fallback. Off
   // while the composer is showing (a new empty entry, or editing an
@@ -57,7 +70,12 @@ export function Diary({ initialDate }: DiaryProps) {
 
   return (
     <section className="page">
-      <Calendar date={date} onChange={setDate} onToday={() => setDate(todayISO())} />
+      <Calendar
+        date={date}
+        onChange={setDate}
+        onToday={() => setDate(todayISO())}
+        contentDates={contentDates}
+      />
       <DiarySearch onActiveChange={setSearching} />
 
       <div
