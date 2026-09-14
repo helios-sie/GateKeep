@@ -1,0 +1,68 @@
+/* The shared overlay/panel/header/torn-corner chrome lives in
+ * ../TornPanel.css (also used by Checklist/Diary's MonthGridPicker) —
+ * only the month grid itself is specific to this component. */
+
+.month-year-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3) var(--sp-2);
+  padding: var(--sp-2) 0;
+}
+
+.month-year-cell {
+  position: relative;
+  padding: var(--sp-3) 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .month-year-cell:hover {
+    background: var(--surface-raised);
+  }
+}
+
+.month-year-cell-label {
+  position: relative;
+}
+
+/* The real current month, when not the browsed one — same thin open ring
+ * MonthGridPicker gives today, just shaped as a pill instead of a circle
+ * since month abbreviations are wider than a day number. */
+.month-year-cell.is-current:not(.is-selected) .month-year-cell-label {
+  color: var(--accent);
+}
+
+.month-year-cell.is-current:not(.is-selected) .month-year-cell-label::before {
+  content: '';
+  position: absolute;
+  inset: -6px -10px;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-pill);
+}
+
+/* The browsed month — same solid ink-stamp treatment as a selected day
+ * (MonthGridPicker.css): darker --accent-hover fill, bold cream text,
+ * z-index: 0 for a proper local stacking context. */
+.month-year-cell.is-selected .month-year-cell-label {
+  position: relative;
+  z-index: 0;
+  color: var(--accent-contrast);
+  font-weight: 700;
+}
+
+.month-year-cell.is-selected .month-year-cell-label::before {
+  content: '';
+  position: absolute;
+  inset: -6px -10px;
+  z-index: -1;
+  background: var(--accent-hover);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-pill);
+  transform: rotate(-2deg);
+}

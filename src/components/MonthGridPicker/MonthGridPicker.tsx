@@ -3,6 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from '../icons';
 import { useWeekContentDates } from '../../hooks/useWeekContentDates';
 import { MONTH_NAMES } from '../../lib/dateUtils';
 import { DAY_LETTERS, getMonthEndDate, getMonthGridCells } from '../../lib/weekUtils';
+import '../TornPanel.css';
 import './MonthGridPicker.css';
 
 interface MonthGridPickerProps {
@@ -11,8 +12,7 @@ interface MonthGridPickerProps {
   selectedDate: string;
   onSelectDate: (date: string) => void;
   onClose: () => void;
-  /** Days after this are shown greyed-out and unpickable, same convention
-   *  as WeekStrip's `maxDate`. */
+  /** Days after this are shown greyed-out and unpickable. */
   maxDate?: string;
   /** Whichever of db.ts's getTasksInRange/getDiaryEntriesInRange fits the
    *  caller, for the content dots — plus the matching taskEvents/
@@ -60,19 +60,19 @@ export function MonthGridPicker({
   }
 
   return (
-    <div className="month-grid-overlay" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="month-grid-panel" onClick={(e) => e.stopPropagation()}>
-        <div className="month-grid-header">
+    <div className="torn-panel-overlay" role="dialog" aria-modal="true" onClick={onClose}>
+      <div className="torn-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="torn-panel-header">
           <button type="button" onClick={() => shiftMonth(-1)} aria-label="Previous month">
             <ChevronLeftIcon />
           </button>
-          <span className="month-grid-title">
+          <span className="torn-panel-title">
             {MONTH_NAMES[viewMonth - 1]} {viewYear}
           </span>
           <button type="button" onClick={() => shiftMonth(1)} aria-label="Next month">
             <ChevronRightIcon />
           </button>
-          <button type="button" className="month-grid-close" onClick={onClose} aria-label="Close">
+          <button type="button" className="torn-panel-close" onClick={onClose} aria-label="Close">
             <CloseIcon />
           </button>
         </div>

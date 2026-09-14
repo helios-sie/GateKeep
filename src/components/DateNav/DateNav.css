@@ -35,3 +35,34 @@
   align-items: center;
   gap: var(--sp-1);
 }
+
+/* The clickable date/month-year label that opens a picker overlay — shared
+ * by Calendar (Checklist/Diary, opens MonthGridPicker) and Reminders'
+ * MonthSwitcher (opens MonthYearPicker), so both read as the exact same
+ * control regardless of what they open. */
+.date-nav-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  background: none;
+  border: none;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.date-nav-trigger:hover {
+  background: var(--surface);
+}
+
+.date-nav-trigger svg {
+  color: var(--text-dim);
+  flex: none;
+}
+
+.date-nav-trigger-label {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+}

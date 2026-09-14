@@ -11,10 +11,10 @@ interface TodayButtonProps {
   onClick: () => void;
 }
 
-// Shared "jump back to now" pill — Checklist/Diary's Calendar (via
-// WeekStrip) uses it as "Today"; Reminders reuses the same component/style
-// as "This Month", so both read as the same affordance despite operating
-// on different granularities (a day vs. a month).
+// Shared "jump back to now" pill — Checklist/Diary's Calendar uses it as
+// "Today"; Reminders reuses the same component/style as "This Month", so
+// both read as the same affordance despite operating on different
+// granularities (a day vs. a month).
 export function TodayButton({ label = 'Today', hidden, onClick }: TodayButtonProps) {
   if (hidden) return null;
 

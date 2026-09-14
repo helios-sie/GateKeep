@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { DateNav } from '../../../../components/DateNav/DateNav';
+import { MonthYearPicker } from '../../../../components/MonthYearPicker/MonthYearPicker';
 import { TodayButton } from '../../../../components/TodayButton';
+import { CalendarIcon } from '../../../../components/icons';
 import { MONTH_NAMES, shiftMonth } from '../../../../lib/dateUtils';
-import './MonthSwitcher.css';
 
 interface MonthSwitcherProps {
   year: number;
@@ -14,16 +16,14 @@ const today = new Date();
 const THIS_YEAR = today.getFullYear();
 const THIS_MONTH = today.getMonth() + 1;
 
-// Lets the user jump directly to any month/year (the two <select>s), or step
-// one month at a time with the shared DateNav arrows (same chrome Calendar
-// uses for Checklist/Diary). Reminders has no single "today" the way
-// Checklist/Diary do — this is its equivalent: a "This Month" pill (the
-// same shared TodayButton, just relabeled) that resets back to the current
-// month/year, shown only once the browsed month/year isn't already that.
+// Reminders' equivalent of Checklist/Diary's Calendar: the same DateNav
+// arrows/spacing/border, and a date-trigger button (calendar icon + label)
+// that opens a picker overlay in the app's own aged-paper style instead of
+// raw <select> dropdowns — MonthYearPicker, the month-grid analogue of
+// MonthGridPicker. "This Month" is the shared TodayButton, just relabeled,
+// since Reminders has no single "today" the way a day-scoped page does.
 export function MonthSwitcher({ year, month, onChange }: MonthSwitcherProps) {
-  const yearOptions = Array.from(
-    new Set([...Array.from({ length: 8 }, (_, i) => THIS_YEAR - 6 + i), year])
-  ).sort((a, b) => a - b);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   function shift(delta: number) {
     const next = shiftMonth(year, month, delta);
@@ -31,43 +31,40 @@ export function MonthSwitcher({ year, month, onChange }: MonthSwitcherProps) {
   }
 
   return (
-    <DateNav
-      onPrev={() => shift(-1)}
-      onNext={() => shift(1)}
-      prevLabel="Previous month"
-      nextLabel="Next month"
-    >
-      <div className="month-switcher-selects">
-        <select
-          value={month}
-          onChange={(e) => onChange(year, Number(e.target.value))}
-          aria-label="Month"
+    <>
+      <DateNav
+        onPrev={() => shift(-1)}
+        onNext={() => shift(1)}
+        prevLabel="Previous month"
+        nextLabel="Next month"
+      >
+        <button
+          type="button"
+          className="date-nav-trigger"
+          onClick={() => setPickerOpen(true)}
+          aria-haspopup="dialog"
         >
-          {MONTH_NAMES.map((name, i) => (
-            <option key={name} value={i + 1}>
-              {name}
-            </option>
-          ))}
-        </select>
+          <CalendarIcon />
+          <span className="date-nav-trigger-label">
+            {MONTH_NAMES[month - 1]} {year}
+          </span>
+        </button>
 
-        <select
-          value={year}
-          onChange={(e) => onChange(Number(e.target.value), month)}
-          aria-label="Year"
-        >
-          {yearOptions.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
-      </div>
+        <TodayButton
+          label="This Month"
+          hidden={year === THIS_YEAR && month === THIS_MONTH}
+          onClick={() => onChange(THIS_YEAR, THIS_MONTH)}
+        />
+      </DateNav>
 
-      <TodayButton
-        label="This Month"
-        hidden={year === THIS_YEAR && month === THIS_MONTH}
-        onClick={() => onChange(THIS_YEAR, THIS_MONTH)}
-      />
-    </DateNav>
+      {pickerOpen && (
+        <MonthYearPicker
+          year={year}
+          month={month}
+          onSelect={onChange}
+          onClose={() => setPickerOpen(false)}
+        />
+      )}
+    </>
   );
 }

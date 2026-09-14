@@ -4,7 +4,6 @@ import { MonthGridPicker } from '../MonthGridPicker/MonthGridPicker';
 import { TodayButton } from '../TodayButton';
 import { CalendarIcon } from '../icons';
 import { addDays, formatDisplay, todayISO } from '../../lib/dateUtils';
-import './Calendar.css';
 
 interface CalendarProps {
   date: string;
@@ -39,12 +38,12 @@ export function Calendar({ date, onChange, onToday, fetchContentInRange, onConte
       >
         <button
           type="button"
-          className="calendar-date-trigger"
+          className="date-nav-trigger"
           onClick={() => setGridOpen(true)}
           aria-haspopup="dialog"
         >
           <CalendarIcon />
-          <span className="calendar-display-label">{formatDisplay(date)}</span>
+          <span className="date-nav-trigger-label">{formatDisplay(date)}</span>
         </button>
 
         {onToday && <TodayButton hidden={date === todayISO()} onClick={onToday} />}

@@ -1,0 +1,111 @@
+/* Shared "torn desk-calendar page" chrome for every picker overlay opened
+ * from a DateNav date-trigger — MonthGridPicker (Checklist/Diary) and
+ * MonthYearPicker (Reminders) both use these same classes, so the two
+ * pickers are visually one language, not two similar-but-drifting ones. */
+
+.torn-panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-5) var(--sp-4);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.torn-panel {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface);
+  background-image: var(--paper-texture);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  padding: var(--sp-4);
+}
+
+/* A torn corner, top-right — small jagged in/out notches like a page
+ * actually torn from a desk-calendar pad. Deliberately a decorative
+ * overlay layered ON TOP of the corner (its own small shape + shadow, one
+ * pointer-events: none pseudo-element) rather than a clip-path on the
+ * panel itself: clipping the real panel geometry previously ate into the
+ * header row and hid the close button underneath it. This way the panel
+ * stays a normal full rectangle — nothing real ever gets clipped away —
+ * and the torn look is purely visual, confined to the corner's own dead
+ * space outside the header content. */
+.torn-panel::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 22px;
+  height: 22px;
+  background: var(--surface);
+  clip-path: polygon(
+    100% 0,
+    100% 100%,
+    55% 78%,
+    68% 62%,
+    42% 58%,
+    60% 44%,
+    30% 38%,
+    50% 24%,
+    18% 18%,
+    40% 6%,
+    10% 0
+  );
+  box-shadow: -1px 2px 3px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.torn-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 40px;
+  background: linear-gradient(200deg, rgba(0, 0, 0, 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+.torn-panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.torn-panel-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.torn-panel-header button:hover {
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+
+.torn-panel-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.torn-panel-close {
+  flex: none;
+  margin-left: var(--sp-2);
+}
