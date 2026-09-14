@@ -1,0 +1,221 @@
+.month-grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-5) var(--sp-4);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.month-grid-panel {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface);
+  background-image: var(--paper-texture);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  padding: var(--sp-4);
+}
+
+/* A torn corner, top-right — small jagged in/out notches like a page
+ * actually torn from a desk-calendar pad. Deliberately a decorative
+ * overlay layered ON TOP of the corner (its own small shape + shadow, one
+ * pointer-events: none pseudo-element) rather than a clip-path on the
+ * panel itself: clipping the real panel geometry previously ate into the
+ * header row and hid the close button underneath it. This way the panel
+ * stays a normal full rectangle — nothing real ever gets clipped away —
+ * and the torn look is purely visual, confined to the corner's own dead
+ * space outside the header content. */
+.month-grid-panel::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 22px;
+  height: 22px;
+  background: var(--surface);
+  clip-path: polygon(
+    100% 0,
+    100% 100%,
+    55% 78%,
+    68% 62%,
+    42% 58%,
+    60% 44%,
+    30% 38%,
+    50% 24%,
+    18% 18%,
+    40% 6%,
+    10% 0
+  );
+  box-shadow: -1px 2px 3px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.month-grid-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 40px;
+  background: linear-gradient(200deg, rgba(0, 0, 0, 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+.month-grid-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.month-grid-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.month-grid-header button:hover {
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+
+.month-grid-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.month-grid-close {
+  flex: none;
+  margin-left: var(--sp-2);
+}
+
+.month-grid-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: var(--sp-1);
+}
+
+.month-grid-weekdays span {
+  text-align: center;
+  font-size: 0.65rem;
+  letter-spacing: 0.03em;
+  color: var(--text-faint);
+}
+
+/* Hairline grid lines via the classic gap-as-border trick: a 1px gap over
+ * a --border-colored background, with every cell painted --surface on top
+ * — thin and even everywhere, without stacking individual cell borders. */
+.month-grid-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.month-grid-day {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: none;
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .month-grid-day:hover:not(:disabled) {
+    background: var(--surface-raised);
+  }
+}
+
+.month-grid-day.is-outside {
+  color: var(--text-faint);
+  background: var(--bg);
+}
+
+.month-grid-day:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.month-grid-day-number {
+  position: relative;
+}
+
+/* Today, when not the selected day — a thin open ring, deliberately not
+ * filled, so it reads as "today" without competing with the solid
+ * selected stamp. */
+.month-grid-day.is-today:not(.is-selected) .month-grid-day-number {
+  color: var(--accent);
+}
+
+.month-grid-day.is-today:not(.is-selected) .month-grid-day-number::before {
+  content: '';
+  position: absolute;
+  inset: -6px -8px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+}
+
+/* The selected day — same solid ink-stamp treatment as the week-strip
+ * (WeekStrip.css): darker --accent-hover fill, not the plainer --accent,
+ * so it stays legible against the page; z-index: 0 on the number gives its
+ * ::before a proper local stacking context. */
+.month-grid-day.is-selected .month-grid-day-number {
+  position: relative;
+  z-index: 0;
+  color: var(--accent-contrast);
+  font-weight: 700;
+}
+
+.month-grid-day.is-selected .month-grid-day-number::before {
+  content: '';
+  position: absolute;
+  inset: -6px -8px;
+  z-index: -1;
+  background: var(--accent-hover);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 50% 48% 50% 47% / 48% 50% 47% 50%;
+  transform: rotate(-3deg);
+}
+
+.month-grid-day-dot {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.month-grid-day.is-selected .month-grid-day-dot {
+  /* Same position, just recolored — on the dark stamp fill, the plain
+   * --accent dot would vanish; --accent-contrast (cream) stays visible
+   * against it, mirroring how the week-strip handles the same case. */
+  background: var(--accent-contrast);
+}

@@ -1,0 +1,29 @@
+/* Only the DateNav center content is Calendar-specific — the arrows/
+ * spacing/border live in DateNav.css and are shared with Reminders'
+ * MonthSwitcher. */
+.calendar-date-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  background: none;
+  border: none;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.calendar-date-trigger:hover {
+  background: var(--surface);
+}
+
+.calendar-date-trigger svg {
+  color: var(--text-dim);
+  flex: none;
+}
+
+.calendar-display-label {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+}
