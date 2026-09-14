@@ -82,8 +82,18 @@
   position: relative;
 }
 
-.week-strip-day:hover:not(:disabled) {
-  background: var(--surface);
+/* (hover: hover) + (pointer: fine) — real mouse/trackpad only. Touch
+ * devices report false for both, so this never applies there at all: touch
+ * browsers otherwise simulate a persistent ":hover" on whatever was last
+ * tapped until some *other* element is tapped, and since swiping the page
+ * doesn't count as "tapping elsewhere", that stray pale hover background
+ * would keep sitting on the last-tapped day-tab even after the real
+ * selected date moved on via swipe/Today/date-picker — reading as "the
+ * highlight follows my last tap, not the actual date". */
+@media (hover: hover) and (pointer: fine) {
+  .week-strip-day:hover:not(:disabled) {
+    background: var(--surface);
+  }
 }
 
 .week-strip-day:disabled {
@@ -109,26 +119,32 @@
   color: var(--accent);
 }
 
-/* The "hand-stamped" selected mark — a slightly irregular ink-ring around
- * the number, not a flat filled circle, so it reads as a stamp rather than
- * a UI chip. */
+/* The "hand-stamped" selected mark — a bold ink-filled circle behind the
+ * number (kept a hair irregular/rotated for the stamped feel, but solid
+ * and generously sized so it's unmistakable at a glance, not a wash of
+ * pale-on-pale). `z-index: 0` on the number itself gives its ::before a
+ * proper local stacking context to paint within, instead of z-index: -1
+ * potentially escaping to a distant ancestor context and painting behind
+ * unrelated page layers. */
 .week-strip-day.is-selected .week-strip-day-number {
   position: relative;
+  z-index: 0;
   color: var(--accent-contrast);
+  font-weight: 700;
 }
 
 .week-strip-day.is-selected .week-strip-day-number::before {
   content: '';
   position: absolute;
-  inset: -7px -9px;
+  inset: -8px -10px;
   z-index: -1;
   /* Darker than the plain --accent used elsewhere (today's tint, hover
    * states) specifically so the VIEWED date's stamp reads clearly against
    * the page instead of blending in — the one thing this fix touches;
    * every other day-tab state is untouched. */
   background: var(--accent-hover);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  border-radius: 48% 52% 51% 49% / 53% 47% 53% 47%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 50% 48% 50% 47% / 48% 50% 47% 50%;
   transform: rotate(-3deg);
 }
 
