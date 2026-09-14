@@ -1,3 +1,4 @@
+import { DateNav } from '../DateNav/DateNav';
 import { TodayButton } from '../TodayButton';
 import { addDays, formatDisplay, todayISO } from '../../lib/dateUtils';
 import './Calendar.css';
@@ -13,35 +14,27 @@ interface CalendarProps {
 
 export function Calendar({ date, onChange, onToday }: CalendarProps) {
   return (
-    <div className="calendar">
-      <button onClick={() => onChange(addDays(date, -1))} aria-label="Previous day">
-        ←
-      </button>
+    <DateNav
+      onPrev={() => onChange(addDays(date, -1))}
+      onNext={() => onChange(addDays(date, 1))}
+      nextDisabled={date >= todayISO()}
+      prevLabel="Previous day"
+      nextLabel="Next day"
+    >
+      <input
+        type="date"
+        value={date}
+        max={todayISO()}
+        onChange={(e) => {
+          // Ignore a clear/incomplete edit (empty value) instead of
+          // adopting it as the selected date — an empty string is not a
+          // valid yyyy-MM-dd and would poison every date computed from it.
+          if (e.target.value) onChange(e.target.value);
+        }}
+      />
+      <span className="calendar-display-label">{formatDisplay(date)}</span>
 
-      <div className="calendar-current">
-        <input
-          type="date"
-          value={date}
-          max={todayISO()}
-          onChange={(e) => {
-            // Ignore a clear/incomplete edit (empty value) instead of
-            // adopting it as the selected date — an empty string is not a
-            // valid yyyy-MM-dd and would poison every date computed from it.
-            if (e.target.value) onChange(e.target.value);
-          }}
-        />
-        <span>{formatDisplay(date)}</span>
-
-        {onToday && <TodayButton date={date} onToday={onToday} />}
-      </div>
-
-      <button
-        onClick={() => onChange(addDays(date, 1))}
-        disabled={date >= todayISO()}
-        aria-label="Next day"
-      >
-        →
-      </button>
-    </div>
+      {onToday && <TodayButton date={date} onToday={onToday} />}
+    </DateNav>
   );
 }

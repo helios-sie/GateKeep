@@ -1,41 +1,6 @@
-.calendar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-4);
-  border-bottom: 1px solid var(--border);
-}
-
-.calendar button {
-  background: none;
-  border: 1px solid transparent;
-  font-size: 1.1rem;
-  line-height: 1;
-  color: var(--text-dim);
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-.calendar button:hover:not(:disabled) {
-  color: var(--accent);
-  border-color: var(--border-strong);
-}
-
-.calendar button:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.calendar-current {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-1);
-}
-
-.calendar-current input[type='date'] {
+/* Only the center content is Calendar-specific — the arrows/spacing/border
+ * live in DateNav.css and are shared with Reminders' MonthSwitcher. */
+.date-nav-current input[type='date'] {
   background: none;
   border: none;
   color: var(--text);
@@ -45,7 +10,7 @@
   cursor: pointer;
 }
 
-.calendar-current span {
+.calendar-display-label {
   font-size: 0.8rem;
   color: var(--text-faint);
 }

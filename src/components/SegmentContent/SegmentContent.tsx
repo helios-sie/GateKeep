@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import type { MouseEvent } from 'react';
 import { CameraIcon, MicIcon } from '../icons';
 import { AudioPlayer } from '../MediaViewer/AudioPlayer';
 import { ImageLightbox } from '../MediaViewer/ImageLightbox';
+import { createPhotoThumbnail } from '../../lib/mediaCompression';
 import type { ContentSegment } from '../../types/content';
 import './SegmentContent.css';
 
@@ -37,22 +39,37 @@ export function SegmentContent({ content, getPhoto, getAudio }: SegmentContentPr
         return <InlineAudio key={i} id={segment.id} getAudio={getAudio} onOpen={setOpenAudioUrl} />;
       })}
 
-      {openPhotoUrl && <ImageLightbox src={openPhotoUrl} onClose={() => setOpenPhotoUrl(null)} />}
+      {openPhotoUrl && (
+        <ImageLightbox
+          src={openPhotoUrl}
+          onClose={() => {
+            URL.revokeObjectURL(openPhotoUrl);
+            setOpenPhotoUrl(null);
+          }}
+        />
+      )}
       {openAudioUrl && <AudioPlayer src={openAudioUrl} onClose={() => setOpenAudioUrl(null)} />}
     </span>
   );
 }
 
 function InlinePhoto({ id, getPhoto, onOpen }: { id: string; getPhoto: MediaFetcher; onOpen: (url: string) => void }) {
-  const [url, setUrl] = useState<string | null>(null);
+  // Only ever holds a tiny (~96px) thumbnail, never the full attached
+  // photo — with several photos on one entry, decoding each at full
+  // resolution just to paint a 22px icon is what was exhausting memory
+  // (see mediaCompression.ts). The real photo is fetched again, once, only
+  // when this icon is actually tapped (handleOpen below).
+  const [thumbUrl, setThumbUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let objectUrl: string | null = null;
     let cancelled = false;
-    getPhoto(id).then((photo) => {
+    getPhoto(id).then(async (photo) => {
       if (cancelled || !photo) return;
-      objectUrl = URL.createObjectURL(photo.blob);
-      setUrl(objectUrl);
+      const thumbnail = await createPhotoThumbnail(photo.blob);
+      if (cancelled) return;
+      objectUrl = URL.createObjectURL(thumbnail);
+      setThumbUrl(objectUrl);
     });
     return () => {
       cancelled = true;
@@ -60,18 +77,21 @@ function InlinePhoto({ id, getPhoto, onOpen }: { id: string; getPhoto: MediaFetc
     };
   }, [id, getPhoto]);
 
+  async function handleOpen(e: MouseEvent) {
+    e.stopPropagation(); // don't let this bubble into a row's checkbox label, etc.
+    const photo = await getPhoto(id);
+    if (photo) onOpen(URL.createObjectURL(photo.blob));
+  }
+
   return (
     <button
       type="button"
       className="segment-inline-photo"
-      disabled={!url}
-      onClick={(e) => {
-        e.stopPropagation(); // don't let this bubble into a row's checkbox label, etc.
-        if (url) onOpen(url);
-      }}
+      disabled={!thumbUrl}
+      onClick={handleOpen}
       aria-label="View attached photo"
     >
-      {url ? <img src={url} alt="" /> : <CameraIcon />}
+      {thumbUrl ? <img src={thumbUrl} alt="" /> : <CameraIcon />}
     </button>
   );
 }

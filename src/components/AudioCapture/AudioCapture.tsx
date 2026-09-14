@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { getAudioRecorderOptions } from '../../lib/mediaCompression';
 
 interface AudioCaptureProps {
   /** Handed the recorded audio blob once recording stops — the caller
@@ -31,14 +32,6 @@ function describeStartFailure(err: unknown): string {
   return 'Could not start recording.';
 }
 
-function pickMimeType(): string {
-  if (typeof MediaRecorder.isTypeSupported === 'function') {
-    if (MediaRecorder.isTypeSupported('audio/webm')) return 'audio/webm';
-    if (MediaRecorder.isTypeSupported('audio/mp4')) return 'audio/mp4';
-  }
-  return '';
-}
-
 // Headless: no UI of its own. Records via MediaRecorder; the caller supplies
 // its own mic icon (always shown — see Editor.tsx) and calls
 // ref.current.toggle() to start/stop.
@@ -67,15 +60,15 @@ export const AudioCapture = forwardRef<AudioCaptureHandle, AudioCaptureProps>(fu
       return;
     }
 
-    const mimeType = pickMimeType();
-    const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    const recorderOptions = getAudioRecorderOptions();
+    const recorder = new MediaRecorder(stream, recorderOptions);
     const chunks: Blob[] = [];
 
     recorder.ondataavailable = (e) => {
       if (e.data.size > 0) chunks.push(e.data);
     };
     recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: recorder.mimeType || mimeType });
+      const blob = new Blob(chunks, { type: recorder.mimeType || recorderOptions.mimeType });
       stream.getTracks().forEach((track) => track.stop());
       onRecordingChange?.(false);
       if (blob.size > 0) onCapture(blob);

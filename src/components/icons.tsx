@@ -55,6 +55,22 @@ export function CloseIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function ChevronLeftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M15 5l-7 7 7 7" />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
+
 /** Raw markup equivalents of CameraIcon/MicIcon, for the one spot (Inline
  *  Composer's vanilla-DOM media nodes) that builds elements outside React. */
 export const CAMERA_ICON_SVG =

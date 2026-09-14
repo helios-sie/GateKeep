@@ -1,28 +1,5 @@
-.month-switcher {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-4);
-  border-bottom: 1px solid var(--border);
-}
-
-.month-switcher button {
-  background: none;
-  border: 1px solid transparent;
-  font-size: 1.1rem;
-  line-height: 1;
-  color: var(--text-dim);
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-.month-switcher button:hover {
-  color: var(--accent);
-  border-color: var(--border-strong);
-}
-
+/* Only the center content is MonthSwitcher-specific — the arrows/spacing/
+ * border live in DateNav.css and are shared with Checklist/Diary's Calendar. */
 .month-switcher-selects {
   display: flex;
   gap: var(--sp-2);

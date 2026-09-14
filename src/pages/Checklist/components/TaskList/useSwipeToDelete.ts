@@ -122,7 +122,14 @@ export function useSwipeToDelete(onDelete: () => void, threshold = 88) {
         return;
       }
       lockRef.current = 'horizontal';
-      e.currentTarget.setPointerCapture(e.pointerId);
+      try {
+        // A fast flick's pointerup can land before this move handler does,
+        // which makes this throw NotFoundError on some browsers — harmless
+        // to ignore, capture is just an optimization here.
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // ignore
+      }
       setPhase('dragging');
     }
 

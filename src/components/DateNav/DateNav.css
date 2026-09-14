@@ -1,0 +1,37 @@
+.date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.date-nav-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.date-nav-arrow:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+
+.date-nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.date-nav-current {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}

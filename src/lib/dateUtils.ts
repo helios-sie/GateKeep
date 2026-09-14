@@ -43,6 +43,14 @@ export function formatDateHeading(dateISO: string): string {
   });
 }
 
+/** Shifts (year, month) by `delta` months, wrapping/carrying the year as
+ *  needed. `month` is 1-12 in and out. Shared by MonthSwitcher's arrows and
+ *  Reminders' swipe-to-change-month gesture, so both agree on the math. */
+export function shiftMonth(year: number, month: number, delta: number): { year: number; month: number } {
+  const total = year * 12 + (month - 1) + delta;
+  return { year: Math.floor(total / 12), month: (((total % 12) + 12) % 12) + 1 };
+}
+
 export const MONTH_NAMES = [
   'January',
   'February',

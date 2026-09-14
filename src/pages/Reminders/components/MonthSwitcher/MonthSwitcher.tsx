@@ -1,4 +1,5 @@
-import { MONTH_NAMES } from '../../../../lib/dateUtils';
+import { DateNav } from '../../../../components/DateNav/DateNav';
+import { MONTH_NAMES, shiftMonth } from '../../../../lib/dateUtils';
 import './MonthSwitcher.css';
 
 interface MonthSwitcherProps {
@@ -9,7 +10,8 @@ interface MonthSwitcherProps {
 }
 
 // Lets the user jump directly to any month/year (the two <select>s), or step
-// one month at a time with the arrows.
+// one month at a time with the shared DateNav arrows (same chrome Calendar
+// uses for Checklist/Diary).
 export function MonthSwitcher({ year, month, onChange }: MonthSwitcherProps) {
   const thisYear = new Date().getFullYear();
   const yearOptions = Array.from(
@@ -17,16 +19,17 @@ export function MonthSwitcher({ year, month, onChange }: MonthSwitcherProps) {
   ).sort((a, b) => a - b);
 
   function shift(delta: number) {
-    const total = year * 12 + (month - 1) + delta;
-    onChange(Math.floor(total / 12), (((total % 12) + 12) % 12) + 1);
+    const next = shiftMonth(year, month, delta);
+    onChange(next.year, next.month);
   }
 
   return (
-    <div className="month-switcher">
-      <button type="button" onClick={() => shift(-1)} aria-label="Previous month">
-        ←
-      </button>
-
+    <DateNav
+      onPrev={() => shift(-1)}
+      onNext={() => shift(1)}
+      prevLabel="Previous month"
+      nextLabel="Next month"
+    >
       <div className="month-switcher-selects">
         <select
           value={month}
@@ -52,10 +55,6 @@ export function MonthSwitcher({ year, month, onChange }: MonthSwitcherProps) {
           ))}
         </select>
       </div>
-
-      <button type="button" onClick={() => shift(1)} aria-label="Next month">
-        →
-      </button>
-    </div>
+    </DateNav>
   );
 }

@@ -155,11 +155,50 @@ textarea:focus-visible {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* Without this, .page below is a plain block that shrink-wraps to its own
+   * content — .swipe-content's `flex: 1` (index.css, below) then has no
+   * flex context to grow into and collapses to just its children's natural
+   * height (e.g. ~174px for a short diary entry) instead of filling the
+   * page. That left most of the visibly-empty page area not actually
+   * inside .swipe-content at all — a mouse/touch gesture starting there
+   * hit .app-main itself, which has no swipe handler, so pointerdown never
+   * fired. This — not a threshold or touch-vs-mouse issue — is why swiping
+   * "did nothing": most of what looked swipeable wasn't the target element.
+   */
+  display: flex;
+  flex-direction: column;
 }
 
 .page {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* The swipeable part of a page — everything below its DateNav/MonthSwitcher
+ * header, which stays put while this shifts under the finger (see
+ * useSwipeNavigate). A snap-back transition plays once the finger lifts
+ * without committing a swipe; while actively dragging there's no transition
+ * so it tracks the finger 1:1. */
+.swipe-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  /* Without this, real touch devices leave horizontal drags ambiguous
+   * between "the page is panning" and "JS wants this gesture" — the
+   * browser's own gesture recognizer can delay or swallow the pointermove
+   * sequence entirely while it decides, so the swipe is never seen. This is
+   * the same fix TaskRow.css already applies to .task-item for
+   * swipe-to-delete: explicitly hand vertical panning to the browser and
+   * keep horizontal free for our own pointer handling. */
+  touch-action: pan-y;
+  transition: transform 160ms ease;
+}
+
+.swipe-content.is-dragging {
+  transition: none;
 }
 
 /* Placeholder heading for pages that have no content yet */
