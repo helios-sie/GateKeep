@@ -1,20 +1,26 @@
-import { todayISO } from '../lib/dateUtils';
 import './TodayButton.css';
 
 interface TodayButtonProps {
-  /** The currently viewed date. The button hides itself when this is today. */
-  date: string;
-  onToday: () => void;
+  /** Text shown on the pill — "Today" (Checklist/Diary) or "This Month"
+   *  (Reminders), whatever "jump back to the current thing" means on that
+   *  page. Defaults to "Today". */
+  label?: string;
+  /** Caller decides when there's nothing to jump back to — e.g. the viewed
+   *  date already is today, or the browsed month/year already is this one. */
+  hidden: boolean;
+  onClick: () => void;
 }
 
-// Shared by any page with its own date navigation (Checklist, Diary — both
-// via Calendar). Renders nothing once the viewed date already is today.
-export function TodayButton({ date, onToday }: TodayButtonProps) {
-  if (date === todayISO()) return null;
+// Shared "jump back to now" pill — Checklist/Diary's Calendar (via
+// WeekStrip) uses it as "Today"; Reminders reuses the same component/style
+// as "This Month", so both read as the same affordance despite operating
+// on different granularities (a day vs. a month).
+export function TodayButton({ label = 'Today', hidden, onClick }: TodayButtonProps) {
+  if (hidden) return null;
 
   return (
-    <button type="button" className="today-button" onClick={onToday}>
-      Today
+    <button type="button" className="today-button" onClick={onClick}>
+      {label}
     </button>
   );
 }

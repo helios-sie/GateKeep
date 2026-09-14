@@ -1,4 +1,5 @@
 import { DateNav } from '../../../../components/DateNav/DateNav';
+import { TodayButton } from '../../../../components/TodayButton';
 import { MONTH_NAMES, shiftMonth } from '../../../../lib/dateUtils';
 import './MonthSwitcher.css';
 
@@ -9,13 +10,19 @@ interface MonthSwitcherProps {
   onChange: (year: number, month: number) => void;
 }
 
+const today = new Date();
+const THIS_YEAR = today.getFullYear();
+const THIS_MONTH = today.getMonth() + 1;
+
 // Lets the user jump directly to any month/year (the two <select>s), or step
 // one month at a time with the shared DateNav arrows (same chrome Calendar
-// uses for Checklist/Diary).
+// uses for Checklist/Diary). Reminders has no single "today" the way
+// Checklist/Diary do — this is its equivalent: a "This Month" pill (the
+// same shared TodayButton, just relabeled) that resets back to the current
+// month/year, shown only once the browsed month/year isn't already that.
 export function MonthSwitcher({ year, month, onChange }: MonthSwitcherProps) {
-  const thisYear = new Date().getFullYear();
   const yearOptions = Array.from(
-    new Set([...Array.from({ length: 8 }, (_, i) => thisYear - 6 + i), year])
+    new Set([...Array.from({ length: 8 }, (_, i) => THIS_YEAR - 6 + i), year])
   ).sort((a, b) => a - b);
 
   function shift(delta: number) {
@@ -55,6 +62,12 @@ export function MonthSwitcher({ year, month, onChange }: MonthSwitcherProps) {
           ))}
         </select>
       </div>
+
+      <TodayButton
+        label="This Month"
+        hidden={year === THIS_YEAR && month === THIS_MONTH}
+        onClick={() => onChange(THIS_YEAR, THIS_MONTH)}
+      />
     </DateNav>
   );
 }

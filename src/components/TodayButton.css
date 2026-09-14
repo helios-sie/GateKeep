@@ -1,14 +1,16 @@
 .today-button {
-  margin-top: 2px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--accent);
   font-family: inherit;
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  padding: 1px var(--sp-3);
+  /* Same comfortable tap-target padding as the app's other secondary
+   * buttons (e.g. Diary's Cancel) — was 1px vertical before, far too thin
+   * to tap reliably. */
+  padding: var(--sp-2) var(--sp-4);
   cursor: pointer;
 }
 

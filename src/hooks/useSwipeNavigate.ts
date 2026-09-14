@@ -59,15 +59,6 @@ export function useSwipeNavigate({ onSwipeLeft, onSwipeRight, enabled = true }: 
 
   const onPointerDown = useCallback(
     (e: ReactPointerEvent<HTMLElement>) => {
-      // TEMPORARY DEBUG LOGGING — logs unconditionally, before the enabled/
-      // ignore checks below, so it fires (and tells you why nothing further
-      // happens) even when the gesture ends up being ignored.
-      // eslint-disable-next-line no-console
-      console.log('[swipe-nav] POINTERDOWN', {
-        enabled,
-        pointerType: e.pointerType,
-        target: (e.target as HTMLElement).tagName + '.' + (e.target as HTMLElement).className,
-      });
       if (!enabled) {
         lockRef.current = 'ignored';
         return;
@@ -101,10 +92,6 @@ export function useSwipeNavigate({ onSwipeLeft, onSwipeRight, enabled = true }: 
     const dx = e.clientX - startX.current;
     const dy = e.clientY - startY.current;
 
-    // TEMPORARY DEBUG LOGGING
-    // eslint-disable-next-line no-console
-    console.log('[swipe-nav] POINTERMOVE', { dx, dy, lock: lockRef.current });
-
     if (lockRef.current === 'none') {
       if (Math.abs(dx) < LOCK_THRESHOLD && Math.abs(dy) < LOCK_THRESHOLD) return;
       if (Math.abs(dy) > Math.abs(dx)) {
@@ -133,18 +120,11 @@ export function useSwipeNavigate({ onSwipeLeft, onSwipeRight, enabled = true }: 
   const onPointerUp = useCallback(
     (e: ReactPointerEvent<HTMLElement>) => {
       if (lockRef.current !== 'horizontal' || e.pointerId !== activePointerId.current) {
-        // TEMPORARY DEBUG LOGGING
-        // eslint-disable-next-line no-console
-        console.log('[swipe-nav] POINTERUP — ignored, lock was', lockRef.current);
         reset();
         return;
       }
       const dx = e.clientX - (startX.current ?? e.clientX);
-      const committed = Math.abs(dx) >= COMMIT_THRESHOLD;
-      // TEMPORARY DEBUG LOGGING
-      // eslint-disable-next-line no-console
-      console.log('[swipe-nav] POINTERUP', { dx, threshold: COMMIT_THRESHOLD, committed });
-      if (committed) {
+      if (Math.abs(dx) >= COMMIT_THRESHOLD) {
         if (dx < 0) onSwipeLeft();
         else onSwipeRight();
       }

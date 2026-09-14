@@ -44,7 +44,7 @@ export function WeekStrip({ selectedDate, onSelectDate, contentDates, maxDate, o
       <div className="week-strip-header">
         <span className="week-strip-label">{formatDisplay(selectedDate)}</span>
         <div className="week-strip-header-actions">
-          {onToday && <TodayButton date={selectedDate} onToday={onToday} />}
+          {onToday && <TodayButton hidden={selectedDate === todayISO()} onClick={onToday} />}
           <button
             type="button"
             className="week-strip-calendar-btn"

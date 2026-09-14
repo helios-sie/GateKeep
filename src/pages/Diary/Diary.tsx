@@ -58,14 +58,18 @@ export function Diary({ initialDate }: DiaryProps) {
   );
 
   // Swipe left/right anywhere on the entry to move a day forward/back — the
-  // Calendar arrows above do the same thing and stay as a fallback. Off
-  // while the composer is showing (a new empty entry, or editing an
-  // existing one): swiping there could too easily read as an accidental
-  // page-turn and silently abandon an in-progress edit instead.
+  // Calendar arrows above do the same thing and stay as a fallback. Off only
+  // while actively editing an EXISTING entry (`editing`) — that's the one
+  // case where swiping away could silently abandon real in-progress
+  // changes. A blank day with no entry yet (`showEditor` but not
+  // `editing`) has nothing unsaved to lose, so swipe stays on there — gating
+  // on `showEditor` instead used to disable swipe on every entry-less day,
+  // which is most days for most users, and read as the whole gesture being
+  // randomly broken.
   const { dragX, dragging, handlers } = useSwipeNavigate({
     onSwipeLeft: () => setDate((d) => (d < todayISO() ? addDays(d, 1) : d)),
     onSwipeRight: () => setDate((d) => addDays(d, -1)),
-    enabled: !searching && !showEditor,
+    enabled: !searching && !editing,
   });
 
   return (
