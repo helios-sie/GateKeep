@@ -1,5 +1,6 @@
 import { type AnimationEvent, useCallback, useEffect, useState } from 'react';
 import quillIcon from './assets/quill-header-icon.png';
+import { BackupPanel } from './components/BackupPanel/BackupPanel';
 import { BottomNav } from './components/BottomNav/BottomNav';
 import { ProfileMenu } from './components/ProfileMenu/ProfileMenu';
 import { Splash } from './components/Splash/Splash';
@@ -76,6 +77,11 @@ export function App() {
             the <h1> already says "GateKeep" to a screen reader. */}
           <img className="app-header-quill" src={quillIcon} alt="" aria-hidden="true" />
           {SHOW_PROFILE_MENU && <ProfileMenu />}
+          {/* Lives in the header, which wraps all three pages, so the chest is
+            in the same corner on Reminders, Checklist and Diary alike. Its
+            own `margin-left: auto` is what holds it against the right edge
+            opposite the wordmark. */}
+          <BackupPanel />
         </header>
 
         <main className="app-main">

@@ -1,0 +1,346 @@
+/* ---- the header button -------------------------------------------------- */
+
+/*
+ * Built from the same parts as the app's other secondary buttons (surface
+ * fill + --border-strong ring, inverting to accent when latched open), so the
+ * chest sits in the header as one of the app's own controls rather than as a
+ * pasted-on badge. `margin-left: auto` is what pushes it to the far right,
+ * opposite the wordmark.
+ */
+.backup-button {
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .backup-button:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+  }
+}
+
+.backup-button.is-open {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+/* ---- overlay + panel ---------------------------------------------------- */
+
+/* Absolutely positioned inside .app, not fixed to the viewport, so on a wide
+ * window the panel slides in against the edge of the app's own column
+ * instead of detaching to the far side of the screen. */
+.backup-menu {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.backup-scrim {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  background: rgba(48, 42, 32, 0.42);
+  cursor: pointer;
+  animation: backup-scrim-in 200ms ease both;
+}
+
+.backup-menu.is-closing .backup-scrim {
+  animation: backup-scrim-in 200ms ease reverse both;
+}
+
+.backup-panel {
+  position: relative;
+  width: min(320px, 86%);
+  display: flex;
+  flex-direction: column;
+  /* Plain --surface, not the paper texture: in this app the texture belongs
+   * to writing surfaces, and chrome is flat surface. */
+  background: var(--surface);
+  border-left: 1px solid var(--border-strong);
+  box-shadow: -10px 0 28px rgba(48, 42, 32, 0.16);
+  animation: backup-panel-in 220ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+
+.backup-menu.is-closing .backup-panel {
+  animation: backup-panel-in 220ms ease reverse both;
+}
+
+.backup-panel-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  padding-top: max(var(--sp-3), env(safe-area-inset-top));
+  border-bottom: 1px solid var(--border);
+}
+
+.backup-panel-head h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-script);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+
+.backup-panel-seal {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.backup-panel-icon-button {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .backup-panel-icon-button:hover {
+    background: var(--surface-raised);
+    color: var(--accent);
+  }
+}
+
+/* ---- body --------------------------------------------------------------- */
+
+.backup-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--sp-4) 0 var(--sp-5);
+}
+
+.backup-intro {
+  margin: 0 var(--sp-4) var(--sp-4);
+  font-family: var(--font-serif);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+/* Same row shape as the profile menu's list items — full-bleed, with the
+ * accent rule appearing on the leading edge on hover. */
+.backup-action {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: none;
+  border-left: 2px solid transparent;
+  background: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .backup-action:not(:disabled):hover {
+    background: var(--surface-raised);
+    border-left-color: var(--accent);
+  }
+}
+
+.backup-action:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.backup-action-glyph {
+  flex: none;
+  margin-top: 1px;
+  color: var(--accent);
+}
+
+.backup-action-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.backup-action-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.backup-action-blurb {
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--text-dim);
+}
+
+/* The picker is opened from the "Restore" row, so the input itself is never
+ * shown — but it stays in the layout-free part of the DOM rather than
+ * `display: none`, which some browsers refuse to click() through. */
+.backup-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.backup-status {
+  margin: var(--sp-4) var(--sp-4) 0;
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+.backup-status.is-error {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ---- restore confirmation ----------------------------------------------- */
+
+.backup-warning {
+  display: flex;
+  gap: var(--sp-3);
+  margin: 0 var(--sp-4) var(--sp-4);
+  padding: var(--sp-3);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+}
+
+.backup-warning-glyph {
+  flex: none;
+  margin-top: 1px;
+  color: var(--danger);
+}
+
+.backup-warning-title {
+  margin: 0 0 var(--sp-1);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.backup-warning-body {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+.backup-file-summary {
+  margin: 0 var(--sp-4) var(--sp-4);
+  font-family: var(--font-serif);
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+.backup-file-name {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.backup-confirm-row {
+  display: flex;
+  gap: var(--sp-2);
+  margin: 0 var(--sp-4);
+}
+
+.backup-secondary,
+.backup-primary {
+  flex: 1;
+  padding: var(--sp-3) var(--sp-2);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.backup-secondary {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-dim);
+}
+
+.backup-primary {
+  border: 1px solid var(--danger);
+  background: var(--danger);
+  color: var(--accent-contrast);
+}
+
+.backup-secondary:disabled,
+.backup-primary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .backup-secondary:not(:disabled):hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+@keyframes backup-panel-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes backup-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
