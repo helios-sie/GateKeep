@@ -20,6 +20,7 @@
 // backup is a single self-contained file the user can email or drop in a
 // cloud folder, with no zip library to pull in.
 
+import { Capacitor } from '@capacitor/core';
 import { getAllTasks } from './db';
 import { notifyDiaryChanged } from './diaryEvents';
 import { notifyTasksChanged } from './taskEvents';
@@ -188,6 +189,61 @@ export async function createBackup(): Promise<{
     filename: `gatekeep-backup-${new Date().toISOString().slice(0, 10)}.json`,
     summary: summarise(stores),
   };
+}
+
+/**
+ * Hands the finished backup to whatever the platform's idea of "save this
+ * file" is, and says which route it took so the panel can word the result
+ * honestly — "Saved to your device" and "shared" are different promises.
+ *
+ * On the web that is an <a download> click. In the Android app it cannot be:
+ * the WebView has no download manager behind an object URL, so the anchor
+ * click is silently a no-op — the one failure mode worth designing around
+ * here, because it looks exactly like success. Instead the JSON is written
+ * into the app's own cache directory and handed to the Android share sheet,
+ * which is also the only way the file reaches anywhere the user can actually
+ * get at it (app-private storage is invisible to the file picker otherwise).
+ *
+ * Cache rather than Documents on purpose: Documents is public external
+ * storage, which Android 10+ gates behind legacy-storage flags, while the
+ * cache directory needs no permission at all and the share sheet serves it
+ * through Capacitor's FileProvider. Android may evict it later, which is
+ * correct — by then the user has already sent the copy that matters.
+ */
+export async function saveBackup(
+  blob: Blob,
+  filename: string
+): Promise<'downloaded' | 'shared'> {
+  if (!Capacitor.isNativePlatform()) {
+    downloadBlob(blob, filename);
+    return 'downloaded';
+  }
+
+  // Imported here, not at module scope, so the web bundle never pulls the
+  // native plugins in at all.
+  const [{ Directory, Encoding, Filesystem }, { Share }] = await Promise.all([
+    import('@capacitor/filesystem'),
+    import('@capacitor/share'),
+  ]);
+
+  await Filesystem.writeFile({
+    path: filename,
+    data: await blob.text(),
+    directory: Directory.Cache,
+    encoding: Encoding.UTF8,
+  });
+
+  const { uri } = await Filesystem.getUri({ path: filename, directory: Directory.Cache });
+
+  await Share.share({
+    title: filename,
+    // `files`, not `url`: `url` would be handed over as a raw file:// path,
+    // which Android 7+ rejects outright (FileUriExposedException).
+    files: [uri],
+    dialogTitle: 'Save your GateKeep backup',
+  });
+
+  return 'shared';
 }
 
 /** Hands a blob to the browser as a download. Kept apart from createBackup so

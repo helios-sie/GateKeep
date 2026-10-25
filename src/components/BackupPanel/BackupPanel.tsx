@@ -3,9 +3,9 @@ import { CloseIcon } from '../icons';
 import { AlertIcon, ChestIcon, DownloadIcon, UploadIcon } from './icons';
 import {
   createBackup,
-  downloadBlob,
   readBackupFile,
   restoreBackup,
+  saveBackup,
   type BackupFile,
   type BackupSummary,
 } from '../../lib/backup';
@@ -60,6 +60,19 @@ function messageFor(error: unknown): string {
   return error instanceof Error ? error.message : 'Something went wrong.';
 }
 
+/*
+ * Backing out of the Android share sheet rejects the call. Nothing went
+ * wrong, so nothing should be said — showing "Something went wrong" to
+ * someone who just pressed Back is worse than showing nothing.
+ *
+ * Matched on the Share plugin's exact wording (SharePlugin.java rejects with
+ * "Share canceled" on RESULT_CANCELED) rather than a loose /cancel/ test,
+ * which would also swallow a real failure that happened to use the word.
+ */
+function isShareDismissal(error: unknown): boolean {
+  return error instanceof Error && error.message.trim() === 'Share canceled';
+}
+
 export function BackupPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -107,10 +120,20 @@ export function BackupPanel() {
     setBusy('backup');
     try {
       const { blob, filename, summary } = await createBackup();
-      downloadBlob(blob, filename);
-      setStatus({ tone: 'ok', message: `Saved ${filename} — ${describe(summary)}.` });
+      const how = await saveBackup(blob, filename);
+      setStatus({
+        tone: 'ok',
+        message:
+          how === 'shared'
+            ? `${filename} is ready to save — ${describe(summary)}.`
+            : `Saved ${filename} — ${describe(summary)}.`,
+      });
     } catch (error) {
-      setStatus({ tone: 'error', message: messageFor(error) });
+      // Dismissing the Android share sheet rejects, and that is a choice the
+      // user made rather than a failure to report at them.
+      if (!isShareDismissal(error)) {
+        setStatus({ tone: 'error', message: messageFor(error) });
+      }
     } finally {
       setBusy(null);
     }

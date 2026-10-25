@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GateKeep</string>
+    <string name="title_activity_main">GateKeep</string>
+    <string name="package_name">com.heliossie.gatekeep</string>
+    <string name="custom_url_scheme">com.heliossie.gatekeep</string>
+</resources>
