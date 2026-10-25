@@ -5,7 +5,7 @@
  * never evicted and, because this file's bytes then never change either, the
  * browser never even notices there is a new worker to install.
  */
-const CACHE_NAME = 'diary-cache-v2';
+const CACHE_NAME = 'diary-cache-v3';
 
 /*
  * Derived from this script's own URL rather than hardcoded, so the base path
@@ -55,7 +55,30 @@ async function put(request, response) {
  */
 async function handleNavigation(request) {
   try {
-    const response = await fetch(request);
+    /*
+     * The shell URL explicitly, with the HTTP cache bypassed — both halves
+     * matter, and "network-first" was neither without them.
+     *
+     * `fetch(request)` is NOT a network fetch: it reads the browser's own
+     * HTTP cache first, and GitHub Pages serves index.html with
+     * `Cache-Control: max-age=600`. So for ten minutes after a deploy this
+     * handler returned the PREVIOUS release's index.html and then wrote it
+     * into the cache below as if it were current — the exact staleness the
+     * network-first strategy exists to prevent. Confirmed against the live
+     * site: a plain fetch returned the old bundle name while a cache-
+     * bypassing one returned the new one.
+     *
+     * `no-cache` revalidates rather than re-downloads: the ETag goes up, and
+     * an unchanged shell comes back 304 and costs nothing.
+     *
+     * Requesting SHELL_URL rather than passing `request` through keeps this
+     * off two sharp edges — a navigate-mode Request cannot be cloned with an
+     * init without having its mode downgraded, and navigation requests carry
+     * their own redirect mode. The app is hash-routed, so every navigation
+     * resolves to this one document anyway; that is already why the cache
+     * entry below is keyed to SHELL_URL.
+     */
+    const response = await fetch(SHELL_URL, { cache: 'no-cache' });
     // Kept under the canonical shell URL, not the request URL, so query
     // strings (?splash=force) can't each spawn their own entry.
     await put(new Request(SHELL_URL), response);
