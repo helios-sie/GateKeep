@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+        Backup is off on purpose. The app's own words to the user are
+        "Everything you write lives only on this device", and Capacitor's
+        default allowBackup="true" would have Android Auto Backup copy the
+        WebView's IndexedDB - the entire journal, photos and recordings
+        included - to the user's Google Drive.
+
+        allowBackup="false" alone is not enough on Android 12+, where it
+        stops cloud backup but leaves device-to-device transfer running. The
+        two rules files are what close that second path; see
+        res/xml/data_extraction_rules.xml.
+    -->
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"

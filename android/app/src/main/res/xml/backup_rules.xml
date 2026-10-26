@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 11 (API 30) and lower. minSdk is 24, so these versions are in
+    range and need their own file: dataExtractionRules is ignored below API
+    31, and this one is ignored at 31 and above.
+
+    Strictly speaking this is belt-and-braces. allowBackup="false" already
+    disables Auto Backup outright on these versions, and device-to-device
+    transfer did not exist before Android 12, so there is nothing here for
+    allowBackup to miss. It is kept for one reason: if anyone ever flips
+    allowBackup back to true — to make some unrelated setting work, say —
+    this file means old devices stay excluded instead of silently beginning
+    to upload the journal.
+-->
+<full-backup-content>
+    <exclude domain="root" path="." />
+    <exclude domain="file" path="." />
+    <exclude domain="database" path="." />
+    <exclude domain="sharedpref" path="." />
+    <exclude domain="external" path="." />
+</full-backup-content>

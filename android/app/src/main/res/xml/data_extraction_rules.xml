@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12 (API 31) and higher.
+
+    This file is the half that actually matters, and it is NOT redundant with
+    android:allowBackup="false" in the manifest. On Android 12+ those two
+    settings cover different transports:
+
+      <cloud-backup>    Google Drive / Auto Backup  - also off via allowBackup
+      <device-transfer> phone-to-new-phone copy     - NOT covered by allowBackup
+
+    Setting allowBackup="false" disables backups to the cloud but leaves
+    device-to-device transfer enabled, so without the <device-transfer> block
+    below the entire journal would still be copied onto a new phone during
+    setup. GateKeep's whole promise is that what you write stays on the device
+    you wrote it on, so both transports are closed.
+
+    There is no "exclude everything" element, so every domain is listed.
+    `root` is the app's own data directory, which is where the WebView keeps
+    its IndexedDB (app_webview/) and therefore where every task, diary entry,
+    photo and recording actually lives; the rest are named explicitly so a
+    future library that writes to shared preferences or a database is covered
+    the day it is added rather than quietly leaking.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+        <exclude domain="device_root" />
+        <exclude domain="device_file" />
+        <exclude domain="device_database" />
+        <exclude domain="device_sharedpref" />
+    </cloud-backup>
+
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+        <exclude domain="device_root" />
+        <exclude domain="device_file" />
+        <exclude domain="device_database" />
+        <exclude domain="device_sharedpref" />
+    </device-transfer>
+</data-extraction-rules>
