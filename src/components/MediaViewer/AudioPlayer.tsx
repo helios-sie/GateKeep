@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Overlay, stopOverlayEvent } from '../Overlay/Overlay';
 import './AudioPlayer.css';
 
 interface AudioPlayerProps {
@@ -77,18 +78,27 @@ export function AudioPlayer({ src, onClose, downloadName = 'audio-note.webm' }: 
   }
 
   return (
-    <div className="audio-player-overlay" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="audio-player" onClick={(e) => e.stopPropagation()}>
-        <div className="audio-player-actions">
+    <Overlay variant="media" label="Audio note" onClose={onClose}>
+      <div className="audio-player" onClick={stopOverlayEvent}>
+        <div className="audio-player-actions overlay-toolbar">
           <a
-            className="audio-player-icon-btn"
+            className="overlay-btn overlay-btn--onSurface"
             href={src}
             download={downloadName}
             aria-label="Download audio note"
+            onClick={stopOverlayEvent}
           >
             ⬇
           </a>
-          <button type="button" className="audio-player-icon-btn" onClick={onClose} aria-label="Close">
+          <button
+            type="button"
+            className="overlay-btn overlay-btn--onSurface"
+            aria-label="Close"
+            onClick={(e) => {
+              stopOverlayEvent(e);
+              onClose();
+            }}
+          >
             ✕
           </button>
         </div>
@@ -138,6 +148,6 @@ export function AudioPlayer({ src, onClose, downloadName = 'audio-note.webm' }: 
           </select>
         </div>
       </div>
-    </div>
+    </Overlay>
   );
 }

@@ -1,44 +1,9 @@
-.image-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--sp-5);
-  background: rgba(0, 0, 0, 0.72);
-}
+/* The backdrop, toolbar and buttons now come from Overlay.css, which every
+ * full-screen overlay shares. What is left here is the photo itself. */
 
 .image-lightbox-img {
   max-width: 100%;
   max-height: 100%;
   border-radius: var(--radius);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-}
-
-.image-lightbox-actions {
-  position: absolute;
-  top: var(--sp-4);
-  right: var(--sp-4);
-  display: flex;
-  gap: var(--sp-2);
-}
-
-.image-lightbox-btn {
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: var(--radius-pill);
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  font-size: 1rem;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.image-lightbox-btn:hover {
-  background: rgba(0, 0, 0, 0.6);
 }

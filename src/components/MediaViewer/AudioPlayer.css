@@ -1,19 +1,5 @@
-.audio-player-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: var(--sp-4);
-  background: rgba(0, 0, 0, 0.5);
-}
-
-@media (min-width: 480px) {
-  .audio-player-overlay {
-    align-items: center;
-  }
-}
+/* The backdrop and the toolbar buttons come from Overlay.css now; this file
+ * is just the parchment card. */
 
 .audio-player {
   position: relative;
@@ -22,35 +8,27 @@
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
-  padding: var(--sp-5) var(--sp-4) var(--sp-4);
+  /* Top padding clears the absolutely-positioned toolbar, whose buttons grew
+   * from 28px to the 44px minimum touch target. */
+  padding: calc(44px + var(--sp-4)) var(--sp-4) var(--sp-4);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  /* Overlay centres its child; on a narrow screen the card is easier to
+   * reach one-handed at the bottom, clear of the gesture bar. */
+  align-self: flex-end;
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (min-width: 480px) {
+  .audio-player {
+    align-self: center;
+    margin-bottom: 0;
+  }
 }
 
 .audio-player-actions {
   position: absolute;
-  top: var(--sp-3);
-  right: var(--sp-3);
-  display: flex;
-  gap: var(--sp-2);
-}
-
-.audio-player-icon-btn {
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-pill);
-  background: var(--surface-raised);
-  color: var(--text-dim);
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.audio-player-icon-btn:hover {
-  color: var(--accent);
-  border-color: var(--accent);
+  top: var(--sp-2);
+  right: var(--sp-2);
 }
 
 .audio-player-controls {

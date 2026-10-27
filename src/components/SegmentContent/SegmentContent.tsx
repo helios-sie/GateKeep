@@ -23,9 +23,28 @@ interface SegmentContentProps {
 // in-app viewer, never a new tab or the OS's own viewer/player. Shared by
 // Checklist tasks (TaskContent) and Diary entries — only which store to
 // fetch media from differs.
+/**
+ * Which viewer is open, as ONE value rather than two independent ones, so
+ * "only one overlay at a time" is a property of the shape instead of
+ * something every caller has to remember. Two `useState`s could both be set.
+ *
+ * `owned` records who has to revoke the object URL, because the two differ:
+ * the photo URL is minted per-open from the full-size blob (and must be
+ * revoked on close, or every tap leaks a photo), whereas the audio URL is
+ * the long-lived one InlineAudio created in its effect and revokes on
+ * unmount — revoking it here would break replaying the same clip.
+ */
+type OpenMedia =
+  | { kind: 'photo'; url: string; owned: true }
+  | { kind: 'audio'; url: string; owned: false };
+
 export function SegmentContent({ content, getPhoto, getAudio }: SegmentContentProps) {
-  const [openPhotoUrl, setOpenPhotoUrl] = useState<string | null>(null);
-  const [openAudioUrl, setOpenAudioUrl] = useState<string | null>(null);
+  const [open, setOpen] = useState<OpenMedia | null>(null);
+
+  function close() {
+    if (open?.owned) URL.revokeObjectURL(open.url);
+    setOpen(null);
+  }
 
   return (
     <span className="segment-content">
@@ -34,21 +53,27 @@ export function SegmentContent({ content, getPhoto, getAudio }: SegmentContentPr
           return <span key={i}>{segment.value}</span>;
         }
         if (segment.type === 'photo') {
-          return <InlinePhoto key={i} id={segment.id} getPhoto={getPhoto} onOpen={setOpenPhotoUrl} />;
+          return (
+            <InlinePhoto
+              key={i}
+              id={segment.id}
+              getPhoto={getPhoto}
+              onOpen={(url) => setOpen({ kind: 'photo', url, owned: true })}
+            />
+          );
         }
-        return <InlineAudio key={i} id={segment.id} getAudio={getAudio} onOpen={setOpenAudioUrl} />;
+        return (
+          <InlineAudio
+            key={i}
+            id={segment.id}
+            getAudio={getAudio}
+            onOpen={(url) => setOpen({ kind: 'audio', url, owned: false })}
+          />
+        );
       })}
 
-      {openPhotoUrl && (
-        <ImageLightbox
-          src={openPhotoUrl}
-          onClose={() => {
-            URL.revokeObjectURL(openPhotoUrl);
-            setOpenPhotoUrl(null);
-          }}
-        />
-      )}
-      {openAudioUrl && <AudioPlayer src={openAudioUrl} onClose={() => setOpenAudioUrl(null)} />}
+      {open?.kind === 'photo' && <ImageLightbox src={open.url} onClose={close} />}
+      {open?.kind === 'audio' && <AudioPlayer src={open.url} onClose={close} />}
     </span>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CloseIcon } from '../icons';
+import { Overlay, stopOverlayEvent } from '../Overlay/Overlay';
 import { AlertIcon, ChestIcon, DownloadIcon, UploadIcon } from './icons';
 import {
   createBackup,
@@ -106,14 +107,8 @@ export function BackupPanel() {
     return () => window.clearTimeout(t);
   }, [isClosing]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !busy) setIsClosing(true);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, busy]);
+  // Escape is handled by Overlay, which calls close() above (and so
+  // inherits its "never mid-write" guard).
 
   async function handleBackup() {
     setStatus(null);
@@ -186,10 +181,13 @@ export function BackupPanel() {
       </button>
 
       {isOpen && (
-        <div className={isClosing ? 'backup-menu is-closing' : 'backup-menu'}>
-          <button type="button" className="backup-scrim" aria-label="Close backup and restore" onClick={close} />
-
-          <aside className="backup-panel" role="dialog" aria-modal="true" aria-label="Backup and restore">
+        <Overlay
+          variant="panel"
+          label="Backup and restore"
+          onClose={close}
+          className={isClosing ? 'backup-menu is-closing' : 'backup-menu'}
+        >
+          <aside className="backup-panel" onClick={stopOverlayEvent}>
             <header className="backup-panel-head">
               <span className="backup-panel-seal" aria-hidden="true">
                 <ChestIcon size={24} />
@@ -302,7 +300,7 @@ export function BackupPanel() {
               </div>
             )}
           </aside>
-        </div>
+        </Overlay>
       )}
     </>
   );

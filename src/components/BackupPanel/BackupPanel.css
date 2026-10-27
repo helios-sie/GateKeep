@@ -39,28 +39,26 @@
 
 /* ---- overlay + panel ---------------------------------------------------- */
 
-/* Absolutely positioned inside .app, not fixed to the viewport, so on a wide
- * window the panel slides in against the edge of the app's own column
- * instead of detaching to the far side of the screen. */
+/*
+ * `.backup-menu` is now a modifier on Overlay's backdrop, not a box of its
+ * own: Overlay supplies position, inset, stacking and the centred column
+ * (`overlay--panel`), so all that is left here is the tint and the fade.
+ *
+ * The panel still slides in against the edge of the app's own column rather
+ * than the far side of a wide window — that was the reason this used to be
+ * `position: absolute` inside .app, and `.overlay--panel` preserves it now
+ * that the whole thing is portalled to <body>. Portalling is what takes the
+ * panel out of reach of the inert/scroll-lock applied to .app behind it.
+ *
+ * The separate `.backup-scrim` button is gone; Overlay's backdrop closes on
+ * a tap that lands on itself.
+ */
 .backup-menu {
-  position: absolute;
-  inset: 0;
-  z-index: 40;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.backup-scrim {
-  position: absolute;
-  inset: 0;
-  border: none;
-  padding: 0;
   background: rgba(48, 42, 32, 0.42);
-  cursor: pointer;
   animation: backup-scrim-in 200ms ease both;
 }
 
-.backup-menu.is-closing .backup-scrim {
+.backup-menu.is-closing {
   animation: backup-scrim-in 200ms ease reverse both;
 }
 

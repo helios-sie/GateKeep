@@ -1,0 +1,130 @@
+/* ---- the backdrop ------------------------------------------------------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  /* The overlay is now a child of <body>, outside .app's centred column, so
+   * it must not chain a scroll out to the page behind it.
+   *
+   * Deliberately NOT `touch-action: none`. That would be the obvious way to
+   * stop a drag reaching the page, but it also governs touch sequences that
+   * START on descendants — which here means the audio scrubber and
+   * pinch-zoom on a photo. It is not needed anyway: body scroll is locked
+   * and .app is inert while this is open, so there is nothing left behind to
+   * pan, and the React-tree leak is already closed by the stopPropagation
+   * handlers in Overlay.tsx. */
+  overscroll-behavior: contain;
+}
+
+/* Centres a photo or the audio card over a dimmed page. */
+.overlay--media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-5);
+  background: rgba(0, 0, 0, 0.72);
+}
+
+/*
+ * Holds a side panel against the right edge of the app's own 480px column
+ * rather than the far edge of a wide window. BackupPanel used to get this
+ * for free by being positioned inside .app; now that it is portalled to
+ * <body> the column has to be re-created here, or the panel would detach to
+ * the far side of a desktop screen.
+ *
+ * A single-column grid does it exactly: the column is capped at the app
+ * width and centred, and the panel is placed at its end.
+ */
+.overlay--panel {
+  display: grid;
+  grid-template-columns: minmax(0, var(--app-width));
+  justify-content: center;
+}
+
+.overlay--panel > * {
+  justify-self: end;
+}
+
+/* ---- shared controls ---------------------------------------------------- */
+
+/*
+ * Floating toolbar for the image lightbox, which has no card of its own to
+ * hang controls off.
+ *
+ * The vertical offset is the point. The ✕ used to sit at top: 16px, and the
+ * header's treasure-chest button is at y=17 with a 38px box — the two
+ * overlapped almost exactly, so on a touch screen the tap that closed the
+ * lightbox was followed by one landing on the chest, which is why closing a
+ * photo kept opening the backup panel. --overlay-toolbar-top clears the
+ * header (measured at 74px) so the same spot is now empty background.
+ */
+.overlay-toolbar {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.overlay-toolbar--floating {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + var(--overlay-toolbar-top));
+  right: calc(env(safe-area-inset-right, 0px) + var(--sp-4));
+}
+
+/* 44px is the smallest comfortably tappable target; the old buttons were
+ * 36px and 28px. Sized with min-* so a wider label would still fit. */
+.overlay-btn {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  font-size: 1.05rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* On the dark scrim of the lightbox. */
+.overlay-btn--onDark {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .overlay-btn--onDark:hover {
+    background: rgba(0, 0, 0, 0.68);
+  }
+}
+
+/* On a parchment card, matching the app's other secondary buttons. */
+.overlay-btn--onSurface {
+  border: 1px solid var(--border-strong);
+  background: var(--surface-raised);
+  color: var(--text-dim);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .overlay-btn--onSurface:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+/* ---- isolation while an overlay is open --------------------------------- */
+
+body.overlay-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/*
+ * The fallback half of overlayStack.ts's applyIsolation(). `inert` already
+ * blocks pointer events wherever it is implemented; this makes the same
+ * thing true on an older Android System WebView that parses the attribute
+ * but does nothing with it.
+ */
+.app[inert] {
+  pointer-events: none;
+}

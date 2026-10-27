@@ -82,6 +82,32 @@
   --ease: 140ms ease;
 
   /*
+   * The app's one stacking scale. Nothing outside this block should write a
+   * bare z-index: add a step here and reference it, so the whole order can
+   * be read in one place instead of being reconstructed by grepping.
+   *
+   * The sole exception is WeekStrip's selected-day ::before, which uses
+   * z-index -1/0 purely to paint behind its own text inside a local
+   * stacking context. That is intra-component and has nothing to do with
+   * app-level layering, so it stays a literal.
+   */
+  --z-raised: 10;
+  --z-panel: 40; /* side panels, when not portalled as an overlay */
+  --z-splash: 60;
+  --z-overlay: 100; /* portalled full-screen overlays (Overlay.tsx) */
+
+  /* The centred column the whole app lives in; Overlay re-creates it so a
+   * portalled side panel still hugs the column edge, not the screen edge. */
+  --app-width: 480px;
+
+  /*
+   * How far below the top of the screen a floating overlay toolbar sits.
+   * Sized to clear the app header (74px measured) so the lightbox's ✕ no
+   * longer lands on the header's treasure-chest button underneath it.
+   */
+  --overlay-toolbar-top: 80px;
+
+  /*
    * Motion scale. Everything in the app sits in the 150-260ms band — long
    * enough to read as movement, short enough that it is over before it can
    * get in the way of a second tap. --ease-out (easeOutQuad) is the default
@@ -152,7 +178,7 @@ textarea:focus-visible {
 }
 
 .app {
-  max-width: 480px;
+  max-width: var(--app-width);
   margin: 0 auto;
   height: 100vh;
   height: 100dvh;
