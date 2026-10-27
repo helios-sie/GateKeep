@@ -82,6 +82,27 @@
   --ease: 140ms ease;
 
   /*
+   * Elevation. The app is parchment under a warm lamp, so a shadow here is
+   * ink soaking into paper, never a grey drop under glass: the ink is
+   * rgba(48, 42, 32, …), which is exactly --text (#302a20). Pure black or a
+   * neutral grey reads as a different, colder light source and immediately
+   * breaks the vintage palette — nothing in this file should introduce one.
+   *
+   * The counterpart is --highlight-top, an INSET line along a raised edge:
+   * --surface (#faf5e9) carried to near-white at the same warm hue (~42deg),
+   * so a lifted edge catches the light instead of being outlined in white.
+   *
+   * --shadow-lg is deliberately horizontal. Its only users are the two side
+   * panels, which slide in from the right and cast leftward onto the page;
+   * a downward shadow there would look like the panel was lying on the page
+   * rather than standing beside it.
+   */
+  --shadow-sm: 0 1px 1px rgba(48, 42, 32, 0.1), 0 2px 4px rgba(48, 42, 32, 0.07);
+  --shadow-md: 0 1px 2px rgba(48, 42, 32, 0.12), 0 6px 14px rgba(48, 42, 32, 0.1);
+  --shadow-lg: -10px 0 28px rgba(48, 42, 32, 0.16);
+  --highlight-top: inset 0 1px 0 rgba(255, 252, 244, 0.9);
+
+  /*
    * The app's one stacking scale. Nothing outside this block should write a
    * bare z-index: add a step here and reference it, so the whole order can
    * be read in one place instead of being reconstructed by grepping.
