@@ -32,6 +32,14 @@
   font-size: 1rem;
   line-height: 1.4;
   cursor: pointer;
+  /* Same token as a Checklist row: these are the same tasks seen from the
+   * Reminders page, and they would read as a flatter, lesser list if the two
+   * pages disagreed about how much a task row is raised. */
+  box-shadow: var(--highlight-top), var(--shadow-sm);
+}
+
+.date-group-task:active:not(:disabled) {
+  box-shadow: var(--shadow-pressed);
 }
 
 .date-group-task:hover {

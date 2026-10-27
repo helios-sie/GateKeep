@@ -63,6 +63,12 @@
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
   background-size: auto, auto, 100% 100%, 100% 100%, 100% 100%, 180px 180px;
   background-blend-mode: multiply, multiply, normal, normal, normal, normal;
+  /* --shadow-sm specifically, and nothing wider: this is the one selector in
+   * the app that can be on screen a hundred times at once, and it must not
+   * get a large blur radius. Nothing transitions it either — a shadow that
+   * animates while the list scrolls is the classic way to lose the frame
+   * budget on a phone. */
+  box-shadow: var(--highlight-top), var(--shadow-sm);
 }
 
 .task-item label {

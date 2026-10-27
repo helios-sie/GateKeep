@@ -21,6 +21,16 @@
   background: var(--surface);
   color: var(--accent);
   cursor: pointer;
+  box-shadow: var(--highlight-top), var(--shadow-sm);
+}
+
+.backup-button:active:not(:disabled) {
+  box-shadow: var(--shadow-pressed);
+}
+
+/* Latched open, the chest is pressed in rather than standing proud. */
+.backup-button.is-open {
+  box-shadow: var(--shadow-pressed);
 }
 
 @media (hover: hover) and (pointer: fine) {

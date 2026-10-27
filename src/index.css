@@ -76,8 +76,11 @@
   --sp-5: 24px;
   --sp-6: 32px;
 
-  --radius: 6px;
-  --radius-sm: 5px;
+  /* Nudged up from 6/5. A thicker-looking sheet of paper has a slightly
+   * softer corner; these two tokens cover 42 of the app's 46 radii, so this
+   * is the whole change. */
+  --radius: 8px;
+  --radius-sm: 6px;
   --radius-pill: 999px;
   --ease: 140ms ease;
 
@@ -97,10 +100,34 @@
    * a downward shadow there would look like the panel was lying on the page
    * rather than standing beside it.
    */
-  --shadow-sm: 0 1px 1px rgba(48, 42, 32, 0.1), 0 2px 4px rgba(48, 42, 32, 0.07);
-  --shadow-md: 0 1px 2px rgba(48, 42, 32, 0.12), 0 6px 14px rgba(48, 42, 32, 0.1);
-  --shadow-lg: -10px 0 28px rgba(48, 42, 32, 0.16);
+  /*
+   * Every elevation token is TWO shadows: a tight contact shadow that pins
+   * the edge to the page, and a wide diffuse one that gives the body. A
+   * single mid-blur shadow is what makes a card look like a glossy plastic
+   * tile floating over a backdrop; the pair is what makes it look like a
+   * thick piece of paper actually resting on another one.
+   *
+   * Blur radii stay small on --shadow-sm (5px) because it is the token the
+   * list rows use, and a wide blur on a long list is the one thing here that
+   * can cost real paint time while scrolling.
+   */
+  --shadow-sm: 0 1px 1px rgba(48, 42, 32, 0.12), 0 2px 5px rgba(48, 42, 32, 0.07);
+  --shadow-md: 0 1px 2px rgba(48, 42, 32, 0.14), 0 5px 12px rgba(48, 42, 32, 0.1);
+  --shadow-lg: -1px 0 2px rgba(48, 42, 32, 0.12), -12px 0 32px rgba(48, 42, 32, 0.18);
+
+  /* The bottom nav casts UP onto the page it sits under, so its shadow is
+   * the only one in the app with a negative Y. */
+  --shadow-nav: 0 -1px 2px rgba(48, 42, 32, 0.08), 0 -6px 16px rgba(48, 42, 32, 0.07);
+
   --highlight-top: inset 0 1px 0 rgba(255, 252, 244, 0.9);
+
+  /* Recessed, not raised: a text field is stamped INTO the paper, which is
+   * why it gets an inset instead of any of the elevation tokens above. */
+  --shadow-field: inset 0 1px 2px rgba(48, 42, 32, 0.09);
+
+  /* What a button swaps to while held down — deeper than --shadow-field so
+   * the press reads as the control being pushed below the surface. */
+  --shadow-pressed: inset 0 2px 4px rgba(48, 42, 32, 0.18);
 
   /*
    * The app's one stacking scale. Nothing outside this block should write a
@@ -141,6 +168,9 @@
    * before responding.
    */
   --motion-fast: 150ms;
+  /* Press feedback only. Deliberately below the 150ms floor of the scale
+   * below: a press has to land under the finger, not arrive after it. */
+  --motion-press: 110ms;
   --motion-base: 200ms;
   --motion-slow: 260ms;
   --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -172,22 +202,29 @@ body {
 button {
   font-family: inherit;
   transition: background-color var(--ease), border-color var(--ease), color var(--ease),
-    transform var(--motion-fast) var(--ease-out);
+    transform var(--motion-press) var(--ease-out), box-shadow var(--motion-press) var(--ease-out);
 }
 
 /*
- * Press feedback. A transform rather than a colour change, because it reads
- * the same on every surface the app has (filled, outlined, bare icon) without
- * needing a per-variant pressed colour.
+ * Press feedback. The button sinks 1px instead of scaling: with elevation
+ * on the raised controls, a shrink reads as the button getting smaller while
+ * its shadow stays put, whereas a 1px drop reads as the thing being pushed
+ * into the paper. Controls that also carry a shadow swap it for
+ * --shadow-pressed in their own file, which completes the movement.
  *
  * Safe as a blanket rule only because no button in the app carries a
  * transform of its own — the one row that does animate its transform
  * (.task-item, swipe-to-delete) is an <li>, not a button, and is handled
  * separately in TaskRow.css. :disabled is excluded so dead controls don't
  * appear to respond.
+ *
+ * prefers-reduced-motion needs nothing extra here: the blanket
+ * `transition: none` at the end of this file makes the sink instant rather
+ * than animated, which is the correct behaviour — the feedback survives, the
+ * movement does not.
  */
 button:active:not(:disabled) {
-  transform: scale(0.96);
+  transform: translateY(1px);
 }
 
 button:focus-visible,

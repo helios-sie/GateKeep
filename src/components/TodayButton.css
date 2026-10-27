@@ -12,6 +12,11 @@
    * to tap reliably. */
   padding: var(--sp-2) var(--sp-4);
   cursor: pointer;
+  box-shadow: var(--highlight-top), var(--shadow-sm);
+}
+
+.today-button:active:not(:disabled) {
+  box-shadow: var(--shadow-pressed);
 }
 
 .today-button:hover {

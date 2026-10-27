@@ -25,6 +25,7 @@
   font-variant-numeric: oldstyle-nums;
   font-size: 1rem;
   line-height: 1.5;
+  box-shadow: var(--shadow-field);
   transition: border-color var(--ease), background-color var(--ease);
 }
 
@@ -126,6 +127,11 @@
   line-height: 1;
   padding: 0;
   cursor: pointer;
+  box-shadow: var(--highlight-top), var(--shadow-sm);
+}
+
+.inline-composer-icon-btn:active:not(:disabled) {
+  box-shadow: var(--shadow-pressed);
 }
 
 .inline-composer-icon-btn:hover {
