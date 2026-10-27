@@ -6,6 +6,7 @@ import { ProfileMenu } from './components/ProfileMenu/ProfileMenu';
 import { Splash } from './components/Splash/Splash';
 import { splashModeForThisLoad } from './components/Splash/splashMode';
 import { useHashRoute } from './hooks/useHashRoute';
+import { useOverlayBackHandler } from './hooks/useOverlayBackHandler';
 import { Checklist } from './pages/Checklist/Checklist';
 import { Diary } from './pages/Diary/Diary';
 import { Reminders } from './pages/Reminders/Reminders';
@@ -28,6 +29,10 @@ const ENTRANCE_FALLBACK_MS = 2400;
 
 export function App() {
   const { route, param, navigate } = useHashRoute();
+
+  // Android hardware back + Escape: closes the topmost overlay before it
+  // ever reaches the route or the OS.
+  useOverlayBackHandler(route);
   const [splashDone, setSplashDone] = useState(false);
   const dismissSplash = useCallback(() => setSplashDone(true), []);
 

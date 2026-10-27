@@ -70,13 +70,9 @@ export function Overlay({ onClose, label, variant, className, children }: Overla
 
   useEffect(() => registerOverlay(() => onCloseRef.current()), []);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onCloseRef.current();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  // Escape is NOT handled here. useOverlayBackHandler owns it, so that
+  // Escape and the Android back button share one definition of "close the
+  // topmost overlay" instead of each overlay closing itself independently.
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     e.stopPropagation();

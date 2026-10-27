@@ -9,6 +9,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    // Node runs the .test.ts files directly (node:test + its native
+    // TypeScript support), and its resolver needs the real extension in the
+    // specifier. Permitted, not required -- app code still imports without.
+    "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
