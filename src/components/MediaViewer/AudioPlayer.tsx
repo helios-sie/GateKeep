@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Overlay, stopOverlayEvent } from '../Overlay/Overlay';
+import { useMediaDownload } from './useMediaDownload';
 import './AudioPlayer.css';
 
 interface AudioPlayerProps {
   src: string;
   onClose: () => void;
-  /** Suggested filename for the Download button. */
+  /** Base name for the Download button; the extension comes from the
+   *  recording's real MIME type, not from here. */
   downloadName?: string;
 }
 
@@ -23,7 +25,8 @@ function formatTime(seconds: number): string {
 // In-app play/pause/scrub player for an attached audio note — tapping one
 // opens this instead of a browser's own default audio popup. Reusable
 // wherever a page shows audio attachments (Checklist now; Diary later).
-export function AudioPlayer({ src, onClose, downloadName = 'audio-note.webm' }: AudioPlayerProps) {
+export function AudioPlayer({ src, onClose, downloadName = 'audio-note' }: AudioPlayerProps) {
+  const { filename, save, error, busy, needsNativeSave } = useMediaDownload(src, 'audio', downloadName);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -84,11 +87,18 @@ export function AudioPlayer({ src, onClose, downloadName = 'audio-note.webm' }: 
           <a
             className="overlay-btn overlay-btn--onSurface"
             href={src}
-            download={downloadName}
+            download={filename}
             aria-label="Download audio note"
-            onClick={stopOverlayEvent}
+            onClick={(e) => {
+              stopOverlayEvent(e);
+              // Web: let the anchor do its own job. WebView: it silently
+              // does nothing, so Filesystem + Share takes over.
+              if (!needsNativeSave) return;
+              e.preventDefault();
+              void save();
+            }}
           >
-            ⬇
+            {busy ? '…' : '⬇'}
           </a>
           <button
             type="button"
@@ -102,6 +112,12 @@ export function AudioPlayer({ src, onClose, downloadName = 'audio-note.webm' }: 
             ✕
           </button>
         </div>
+
+        {error && (
+          <p className="overlay-error overlay-error--onSurface" role="status">
+            {error}
+          </p>
+        )}
 
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <audio ref={audioRef} src={src} preload="metadata" />

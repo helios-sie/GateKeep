@@ -112,6 +112,42 @@
   }
 }
 
+/* ---- transient failure message ------------------------------------------ */
+
+/*
+ * Shown when a save throws. It has to be visible against the lightbox's dark
+ * scrim as well as inside the audio card, hence the two variants.
+ *
+ * Positioned under the floating toolbar rather than over the content: a save
+ * failure is worth reading, but not worth covering the photo the user is
+ * looking at.
+ */
+.overlay-error {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + var(--overlay-toolbar-top) + 52px);
+  right: calc(env(safe-area-inset-right, 0px) + var(--sp-4));
+  left: calc(env(safe-area-inset-left, 0px) + var(--sp-4));
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid var(--danger);
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+/* Inside the audio card, where the parchment surface is the background. */
+.overlay-error--onSurface {
+  position: static;
+  margin: 0 0 var(--sp-3);
+  background: var(--surface-raised);
+  color: var(--danger);
+  text-align: left;
+}
+
 /* ---- isolation while an overlay is open --------------------------------- */
 
 body.overlay-open {

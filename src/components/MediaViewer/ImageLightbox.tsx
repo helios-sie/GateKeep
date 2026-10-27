@@ -1,11 +1,13 @@
 import { Overlay, stopOverlayEvent } from '../Overlay/Overlay';
+import { useMediaDownload } from './useMediaDownload';
 import './ImageLightbox.css';
 
 interface ImageLightboxProps {
   src: string;
   onClose: () => void;
   alt?: string;
-  /** Suggested filename for the Download button. */
+  /** Base name for the Download button; the extension comes from the
+   *  photo's real MIME type, not from here. */
   downloadName?: string;
 }
 
@@ -16,18 +18,28 @@ interface ImageLightboxProps {
 // Everything about escaping the page (portal, backdrop, event isolation,
 // making the app behind inert) belongs to Overlay; see the comment there for
 // the three bugs that came of this being a plain inline <div>.
-export function ImageLightbox({ src, onClose, alt = 'Attached photo', downloadName = 'photo.jpg' }: ImageLightboxProps) {
+export function ImageLightbox({ src, onClose, alt = 'Attached photo', downloadName = 'photo' }: ImageLightboxProps) {
+  const { filename, save, error, busy, needsNativeSave } = useMediaDownload(src, 'photo', downloadName);
+
   return (
     <Overlay variant="media" label="Attached photo" onClose={onClose}>
       <div className="overlay-toolbar overlay-toolbar--floating">
         <a
           className="overlay-btn overlay-btn--onDark"
           href={src}
-          download={downloadName}
+          download={filename}
           aria-label="Download photo"
-          onClick={stopOverlayEvent}
+          onClick={(e) => {
+            stopOverlayEvent(e);
+            // On the web the anchor is left to do its own job. In the
+            // WebView it silently does nothing, so the save is taken over
+            // by Filesystem + Share instead.
+            if (!needsNativeSave) return;
+            e.preventDefault();
+            void save();
+          }}
         >
-          ⬇
+          {busy ? '…' : '⬇'}
         </a>
         <button
           type="button"
@@ -44,6 +56,12 @@ export function ImageLightbox({ src, onClose, alt = 'Attached photo', downloadNa
           ✕
         </button>
       </div>
+
+      {error && (
+        <p className="overlay-error" role="status" onClick={stopOverlayEvent}>
+          {error}
+        </p>
+      )}
 
       <img className="image-lightbox-img" src={src} alt={alt} onClick={stopOverlayEvent} />
     </Overlay>
