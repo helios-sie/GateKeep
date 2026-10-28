@@ -75,7 +75,7 @@
    * tall. */
   background: var(--surface);
   border-left: 1px solid var(--border-strong);
-  box-shadow: -10px 0 28px rgba(48, 42, 32, 0.16);
+  box-shadow: var(--shadow-lg);
   animation: profile-panel-in 220ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
 }
 

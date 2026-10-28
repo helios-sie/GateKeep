@@ -21,6 +21,16 @@
   background: var(--surface);
   color: var(--accent);
   cursor: pointer;
+  box-shadow: var(--highlight-top), var(--shadow-sm);
+}
+
+.backup-button:active:not(:disabled) {
+  box-shadow: var(--shadow-pressed);
+}
+
+/* Latched open, the chest is pressed in rather than standing proud. */
+.backup-button.is-open {
+  box-shadow: var(--shadow-pressed);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -71,7 +81,7 @@
    * to writing surfaces, and chrome is flat surface. */
   background: var(--surface);
   border-left: 1px solid var(--border-strong);
-  box-shadow: -10px 0 28px rgba(48, 42, 32, 0.16);
+  box-shadow: var(--shadow-lg);
   animation: backup-panel-in 220ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
 }
 

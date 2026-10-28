@@ -15,4 +15,9 @@
   border-radius: var(--radius-sm);
   padding: var(--sp-1) var(--sp-2);
   cursor: pointer;
+  box-shadow: var(--highlight-top), var(--shadow-sm);
+}
+
+.month-switcher-selects select:active {
+  box-shadow: var(--shadow-pressed);
 }

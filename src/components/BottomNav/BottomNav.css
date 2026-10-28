@@ -3,6 +3,9 @@
   border-top: 1px solid var(--border);
   background: var(--surface);
   padding-bottom: env(safe-area-inset-bottom);
+  /* Casts upward onto the page. No z-index needed: the nav is the last child
+   * of .app, so it already paints over .app-main in DOM order. */
+  box-shadow: var(--shadow-nav);
 }
 
 .bottom-nav-item {
@@ -26,7 +29,18 @@
   color: var(--text-dim);
 }
 
+/*
+ * The active tab reads as a plate standing slightly proud of the nav: a warm
+ * highlight along its top edge, and the accent rule above it casting a short
+ * shadow down into the tab.
+ *
+ * Deliberately NO background fill. Filling it with --surface-raised would be
+ * the obvious way to lift it, but it would also change the contrast ratio of
+ * the accent label sitting on it, and the text contrast in this app is not
+ * mine to move.
+ */
 .bottom-nav-item.active {
   color: var(--accent);
   border-top-color: var(--accent);
+  box-shadow: var(--highlight-top), inset 0 3px 6px -3px rgba(48, 42, 32, 0.18);
 }

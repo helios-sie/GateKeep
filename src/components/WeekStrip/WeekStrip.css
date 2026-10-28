@@ -1,6 +1,13 @@
 .week-strip {
   padding: var(--sp-3) var(--sp-4);
   border-bottom: 1px solid var(--border);
+  /* Chrome resting on the page, so a contact shadow downward — same idea as
+   * the bottom nav, mirrored. */
+  box-shadow: var(--shadow-sm);
+  /* Without this the shadow is painted over by the page content that follows
+   * it in the same stacking context. */
+  position: relative;
+  z-index: var(--z-raised);
 }
 
 .week-strip-header {
@@ -149,7 +156,11 @@
    * the page instead of blending in — the one thing this fix touches;
    * every other day-tab state is untouched. */
   background: var(--accent-hover);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  /* Was `0 2px 4px rgba(0, 0, 0, 0.3)` — pure black, the one cold shadow left
+   * on a parchment surface. Same weight, warm ink, and split into the
+   * contact/diffuse pair so the stamp sits in the paper rather than hovering
+   * a fixed 2px above it. */
+  box-shadow: 0 1px 1px rgba(48, 42, 32, 0.3), 0 3px 6px rgba(48, 42, 32, 0.22);
   border-radius: 50% 48% 50% 47% / 48% 50% 47% 50%;
   transform: rotate(-3deg);
 }

@@ -18,6 +18,13 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.9rem;
+  /* The highlight is stronger here than on the parchment buttons because it
+   * has to read against a filled accent, not against cream. */
+  box-shadow: inset 0 1px 0 rgba(255, 252, 244, 0.28), var(--shadow-md);
+}
+
+.editor-toolbar button.primary:active:not(:disabled) {
+  box-shadow: var(--shadow-pressed);
 }
 
 .editor-toolbar button.primary:hover {

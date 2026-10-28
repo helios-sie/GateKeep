@@ -18,6 +18,9 @@
   background-blend-mode: multiply, multiply, normal, normal, normal, normal;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
+  /* One card per screen rather than a list, so it can afford the heavier
+   * token — and it should have it: the entry is the page's subject. */
+  box-shadow: var(--highlight-top), var(--shadow-md);
 }
 
 .diary-entry-edit-btn {
